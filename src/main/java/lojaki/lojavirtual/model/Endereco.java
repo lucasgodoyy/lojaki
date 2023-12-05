@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import lojaki.lojavirtual.enums.TipoEndereco;
 
 @Entity
 @Table(name = "endereco")
@@ -48,6 +52,10 @@ public class Endereco implements Serializable {
 	private Pessoa pessoa;
 
 
+	@Enumerated(EnumType.STRING)
+	private TipoEndereco tipoEndereco;
+	
+	
 
 	public Long getId() {
 		return id;
@@ -155,6 +163,13 @@ public class Endereco implements Serializable {
 		this.pessoa = pessoa;
 	}
 
+	public void setTipoEndereco(TipoEndereco tipoEndereco) {
+		this.tipoEndereco = tipoEndereco;
+	} 
+	
+	public TipoEndereco getTipoEndereco() {
+		return tipoEndereco;
+	}
 
 
 	@Override
