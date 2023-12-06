@@ -62,13 +62,21 @@ public class VendaCompraLojaVirtual implements Serializable {
 	@JoinColumn(name = "cupom_desc_id", foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "cupom_desc_fk"))
 	private CupomDesconto cupomDesconto;
 
+	
+	@Column(nullable = false)
 	private BigDecimal valorFrete;
 
+	
+	@Column(nullable = false)
 	private Integer diasEntrega;
 
+	
+	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataVenda;
 
+	
+	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataEntrega;
 
