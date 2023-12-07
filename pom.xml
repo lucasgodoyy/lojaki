@@ -77,6 +77,12 @@
 			<version>5.0.7.RELEASE</version>
 		</dependency>
 
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.7.0</version> <!-- versão Alex -->
+		</dependency>
+
 
 		<dependency>
 			<groupId>junit</groupId>
