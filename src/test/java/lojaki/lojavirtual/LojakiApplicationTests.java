@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,6 +25,8 @@ import lojaki.lojavirtual.controller.AcessoController;
 import lojaki.lojavirtual.model.Acesso;
 import lojaki.lojavirtual.repository.AcessoRepository;
 
+
+@Profile("test")
 @Transactional
 @SpringBootTest
 class LojakiApplicationTests extends TestCase{
