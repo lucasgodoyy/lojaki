@@ -47,4 +47,14 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 		}
 	}
 
+	@Override
+	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException failed) throws IOException {
+		if (failed instanceof BadCredentialsException) {
+			response.getWriter().write("Usuário e/ou senha não encontrado(s)!");
+		} else {
+			response.getWriter().write("Falha ao logar: " + failed.getMessage());
+		}
+	}
+
 }

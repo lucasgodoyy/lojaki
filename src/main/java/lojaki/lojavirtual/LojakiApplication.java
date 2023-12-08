@@ -20,7 +20,7 @@ public class LojakiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LojakiApplication.class, args);
 		
-		System.out.println(new BCryptPasswordEncoder().encode("123"));
+		//System.out.println(new BCryptPasswordEncoder().encode("123"));
 		
 	}
 

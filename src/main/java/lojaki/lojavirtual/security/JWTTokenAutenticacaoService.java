@@ -42,6 +42,8 @@ public class JWTTokenAutenticacaoService {
 	public void addAuthentication(HttpServletResponse response, String username) throws IOException {
 		// Montagem do Token
 		
+		
+		
 		String jwt = Jwts.builder()
 					.setSubject(username)
 					.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -85,7 +87,8 @@ public class JWTTokenAutenticacaoService {
 			}
 		} catch(SignatureException e) {
 			response.getWriter().write("O token está inválido!");
-		} catch(ExpiredJwtException e) {
+			} 
+		catch(ExpiredJwtException e) {
 			response.getWriter().write("O token está expirado! Efetue o login novamente!");
 		} catch(MalformedJwtException e) {
 			response.getWriter().write("O token está mal formado! Utilize um outro token!");
