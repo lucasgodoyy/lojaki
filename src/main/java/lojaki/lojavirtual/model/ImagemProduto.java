@@ -1,7 +1,5 @@
 package lojaki.lojavirtual.model;
 
-
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -28,76 +26,64 @@ public class ImagemProduto implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_imagem_produto")
 	private Long id;
 
-	
 	@Column(columnDefinition = "text", nullable = false)
 	private String imagemOriginal;
 
 	@Column(columnDefinition = "text", nullable = false)
 	private String imagemMiniatura;
 
-
-	
 	@ManyToOne
-	@JoinColumn(name = "produto_id", nullable = false, 
-	foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "produto_fk"))
+	@JoinColumn(name = "produto_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "produto_fk"))
 	private Produto produto;
 
-
+	@ManyToOne(targetEntity = Pessoa.class)
+	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	private Pessoa empresa;
 
 	public Long getId() {
 		return id;
 	}
 
-
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-
 
 	public String getImagemOriginal() {
 		return imagemOriginal;
 	}
 
-
-
 	public void setImagemOriginal(String imagemOriginal) {
 		this.imagemOriginal = imagemOriginal;
 	}
-
-
 
 	public String getImagemMinuatura() {
 		return imagemMiniatura;
 	}
 
-
-
 	public void setImagemMinuatura(String imagemMinuatura) {
 		this.imagemMiniatura = imagemMinuatura;
 	}
-
-
 
 	public Produto getProduto() {
 		return produto;
 	}
 
-
-
 	public void setProduto(Produto produto) {
 		this.produto = produto;
 	}
 
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
+	}
 
+	public Pessoa getEmpresa() {
+		return empresa;
+	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -110,22 +96,5 @@ public class ImagemProduto implements Serializable {
 		ImagemProduto other = (ImagemProduto) obj;
 		return Objects.equals(id, other.id);
 	}
-	
-	
-	
-	
-	
-}
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+}

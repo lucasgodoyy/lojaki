@@ -20,8 +20,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
-
 @Entity
 @Table(name = "vd_cp_loja_virt")
 @SequenceGenerator(name = "seq_vd_cp_loja_virt", sequenceName = "seq_vd_cp_loja_virt", allocationSize = 1, initialValue = 1)
@@ -62,23 +60,23 @@ public class VendaCompraLojaVirtual implements Serializable {
 	@JoinColumn(name = "cupom_desc_id", foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "cupom_desc_fk"))
 	private CupomDesconto cupomDesconto;
 
-	
 	@Column(nullable = false)
 	private BigDecimal valorFrete;
 
-	
 	@Column(nullable = false)
 	private Integer diasEntrega;
 
-	
 	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataVenda;
 
-	
 	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataEntrega;
+
+	@ManyToOne(targetEntity = Pessoa.class)
+	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	private Pessoa empresa;
 
 	public Long getId() {
 		return id;
@@ -182,6 +180,14 @@ public class VendaCompraLojaVirtual implements Serializable {
 
 	public void setDataEntrega(Date dataEntrega) {
 		this.dataEntrega = dataEntrega;
+	}
+	
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
+	}
+	
+	public Pessoa getEmpresa() {
+		return empresa;
 	}
 
 	@Override

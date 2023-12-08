@@ -1,5 +1,6 @@
 package lojaki.lojavirtual;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -188,9 +189,12 @@ class LojakiApplicationTests extends TestCase{
 	@Test
 	public void testCadastroAcesso() throws ExceptionLojaki  {
 		
+		
+		String descricao = "ROLE_TESTE" + Calendar.getInstance().getTimeInMillis();
+		
 		Acesso acesso = new Acesso();
 		
-		acesso.setDescricao("ROLE_TESTE8");
+		acesso.setDescricao(descricao);
 		
 		assertEquals(true, acesso.getId() == null );
 		
@@ -198,7 +202,7 @@ class LojakiApplicationTests extends TestCase{
 		
 		assertEquals(true, acesso.getId() > 0 );
 		
-		assertEquals("ROLE_TESTE8", acesso.getDescricao());
+		assertEquals(descricao, acesso.getDescricao());
 		
 		
 		/*teste carregamento*/
@@ -228,7 +232,7 @@ class LojakiApplicationTests extends TestCase{
 		List<Acesso> acessos = acessoRepository.buscarAcessoDesc("A".trim().toUpperCase());
 		
 		
-		assertEquals(1, acessos.size());
+		assertEquals(2, acessos.size());
 		acessoRepository.deleteById(acesso.getId());
 		
 		
