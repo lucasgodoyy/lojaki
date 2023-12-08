@@ -17,14 +17,20 @@ import org.springframework.web.filter.GenericFilterBean;
 public class JwtApiAutenticacaoFilter extends GenericFilterBean {
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+
+		try {
 			Authentication authentication = new JWTTokenAutenticacaoService()
 					.getAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			chain.doFilter(request, response);
-				
+			} 
+		catch (Exception e) {
+		e.printStackTrace();
+		response.getWriter().write("Ocorreu um erro no sistema, avise o administrador: \n" + e.getMessage());
 		}
+	}
 }

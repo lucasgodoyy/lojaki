@@ -1,18 +1,13 @@
 package lojaki.lojavirtual;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +22,21 @@ import lojaki.lojavirtual.model.dto.ObjetoErroDTO;
 @ControllerAdvice
 public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
+	
+	
+	@ExceptionHandler(ExceptionLojaki.class)
+	public ResponseEntity<Object> handleExceptionCustom(ExceptionLojaki ex) {
+		
+		ObjetoErroDTO objetoErroDTO = new ObjetoErroDTO();
+		
+		objetoErroDTO.setError(ex.getMessage());
+		objetoErroDTO.setCode(HttpStatus.OK.toString());
+		
+		return new ResponseEntity<>(objetoErroDTO, HttpStatus.OK);
+	}
+	
+	
+	
 	@ExceptionHandler({ Exception.class, RuntimeException.class, Throwable.class })
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
@@ -52,6 +62,8 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<Object>(objetoErroDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	
+	
 
 	// erros de banco
 	@ExceptionHandler({ DataIntegrityViolationException.class, ConstraintViolationException.class, SQLException.class })

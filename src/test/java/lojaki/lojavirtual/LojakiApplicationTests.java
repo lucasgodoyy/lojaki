@@ -186,7 +186,7 @@ class LojakiApplicationTests extends TestCase{
 	
 	
 	@Test
-	public void testCadastroAcesso()  {
+	public void testCadastroAcesso() throws ExceptionLojaki  {
 		
 		Acesso acesso = new Acesso();
 		

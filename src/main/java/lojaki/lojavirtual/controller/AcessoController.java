@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lojaki.lojavirtual.ExceptionLojaki;
 import lojaki.lojavirtual.model.Acesso;
 import lojaki.lojavirtual.repository.AcessoRepository;
 import lojaki.lojavirtual.service.AcessoService;
@@ -28,7 +29,16 @@ public class AcessoController {
 
 	@ResponseBody
 	@PostMapping(value = "**/salvarAcesso")
-	public ResponseEntity<Acesso> salvarAcesso(@RequestBody Acesso acesso) {
+	public ResponseEntity<Acesso> salvarAcesso(@RequestBody Acesso acesso) throws ExceptionLojaki {
+
+		if (acesso.getId() == null) {
+
+			List<Acesso> acessos = acessoRepository.buscarAcessoDesc(acesso.getDescricao().toUpperCase());
+
+			if (!acessos.isEmpty()) {
+				throw new ExceptionLojaki("Já existe acesso com a descrição: " + acesso.getDescricao());
+			}
+		}
 
 		Acesso acessoSalvo = acessoService.save(acesso);
 
@@ -55,18 +65,21 @@ public class AcessoController {
 
 	@ResponseBody
 	@GetMapping(value = "**/obterAcessoPorId/{id}")
-	public ResponseEntity<Acesso> pesquisarPorId(@PathVariable("id") Long id)   {
-		Acesso acesso = acessoRepository.findById(id).get();
+	public ResponseEntity<Acesso> pesquisarPorId(@PathVariable("id") Long id) throws ExceptionLojaki {
+		Acesso acesso = acessoRepository.findById(id).orElse(null);
+
+		if (acesso == null) {
+			throw new ExceptionLojaki("Não foi possível encontrar acesso com id " + id);
+		}
+
 		return new ResponseEntity<Acesso>(acesso, HttpStatus.OK);
+
 	}
-	
-	
+
 	@GetMapping(value = "**/obterAcessoPorDescricao/{desc}")
 	public ResponseEntity<List<Acesso>> pesquisarPorDescricao(@PathVariable("desc") String desc) {
 		List<Acesso> acessos = acessoRepository.buscarAcessoDesc(desc.toUpperCase());
 		return new ResponseEntity<>(acessos, HttpStatus.OK);
 	}
-	
-	
-	
+
 }
