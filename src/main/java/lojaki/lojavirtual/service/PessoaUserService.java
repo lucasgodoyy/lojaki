@@ -51,7 +51,8 @@ public class PessoaUserService {
 			usuarioPj.setSenha(senhaCriptografada);
 			usuarioPj = usuarioRepository.save(usuarioPj);
 
-			usuarioRepository.insereAcessoUserPj(usuarioPj.getId());
+			usuarioRepository.insereAcessoUser(usuarioPj.getId());
+			usuarioRepository.insereAcessoUserPj(usuarioPj.getId(), "ROLE_ADMIN");
 
 			
 			// Envio e-mail login e senha

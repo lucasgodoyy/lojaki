@@ -1,5 +1,7 @@
 package lojaki.lojavirtual.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +20,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
     Usuario findUserByPessoa(Long id, String email);
 
 	
+	@Query("SELECT u FROM Usuario u WHERE u.dataAtualSenha <= current_date - 90")
+	List<Usuario> obterUsuariosComSenhaVencida();
+	
 	
 	@Query(value = "SELECT constraint_name \n" +
 			"FROM information_schema.constraint_column_usage\n" +
@@ -27,11 +32,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 	String consultaConstraintAcesso();
 
 	
-	
 	@Transactional
 	@Modifying
 	@Query(value = "INSERT INTO usuarios_acesso(usuario_id, acesso_id) VALUES (?1, (SELECT id FROM acesso WHERE descricao = 'ROLE_USER'))", nativeQuery = true)
-	void insereAcessoUserPj(Long idUser);
-	
+	void insereAcessoUser(Long idUser);
 
+	@Transactional
+	@Modifying
+	@Query(value = "INSERT INTO usuarios_acesso(usuario_id, acesso_id) VALUES (?1, (SELECT id FROM acesso WHERE descricao = ?2 limit 1))", nativeQuery = true)
+	void insereAcessoUserPj(Long idUser, String acesso);
+	
+	
+	
+	
 }
