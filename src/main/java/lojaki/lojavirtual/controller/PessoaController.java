@@ -51,7 +51,7 @@ public class PessoaController {
 	}
 
 	@PostMapping(value = "**/salvarPf")
-	public ResponseEntity<PessoaFisica> salvarPf(@RequestBody PessoaFisica pessoaFisica) throws ExceptionLojaki {
+	public ResponseEntity<PessoaFisica> salvarPf(@RequestBody  @Valid PessoaFisica pessoaFisica) throws ExceptionLojaki {
 
 		if (pessoaFisica == null) {
 			throw new ExceptionLojaki("Pessoa física não pode ser NULL!");
