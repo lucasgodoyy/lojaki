@@ -1,9 +1,14 @@
 package lojaki.lojavirtual;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,11 +23,14 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import lojaki.lojavirtual.model.dto.ObjetoErroDTO;
+import lojaki.lojavirtual.service.ServiceSendEmail;
 
 @RestControllerAdvice
 @ControllerAdvice
 public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
+	@Autowired
+	private ServiceSendEmail serviceSendEmail;
 	
 	
 	@ExceptionHandler(ExceptionLojaki.class)
@@ -66,7 +74,15 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 		objetoErroDTO.setCode(status.value() + " ==> " + status.getReasonPhrase());
 
 		ex.printStackTrace();
-
+		
+		try {
+			serviceSendEmail.enviarEmailHtml("Erro na operação", ExceptionUtils.getStackTrace(ex),
+					 "ehlucasgodoy10@gmail.com");
+			} 
+		catch (UnsupportedEncodingException | MessagingException e) {
+			e.printStackTrace();
+		}
+		
 		return new ResponseEntity<Object>(objetoErroDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
@@ -100,6 +116,15 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 		ex.printStackTrace();
 
+		try {
+			serviceSendEmail.enviarEmailHtml("Erro na operação", ExceptionUtils.getStackTrace(ex),
+					 "ehlucasgodoy10@gmail.com");
+			} 
+		catch (UnsupportedEncodingException | MessagingException e) {
+			e.printStackTrace();
+		}
+		
+		
 		return new ResponseEntity<>(objetoErroDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

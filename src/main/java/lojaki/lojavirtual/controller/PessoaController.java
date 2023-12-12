@@ -1,5 +1,7 @@
 package lojaki.lojavirtual.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import lojaki.lojavirtual.model.PessoaFisica;
 import lojaki.lojavirtual.model.PessoaJuridica;
 import lojaki.lojavirtual.model.dto.CepDTO;
 import lojaki.lojavirtual.repository.EnderecoRepository;
+import lojaki.lojavirtual.repository.PessoaFisicaRepository;
 import lojaki.lojavirtual.repository.PessoaJuridicaRepository;
 import lojaki.lojavirtual.service.PessoaUserService;
 import lojaki.lojavirtual.util.ValidaCNPJ;
@@ -28,6 +31,9 @@ public class PessoaController {
 
 	@Autowired
 	private PessoaJuridicaRepository pessoaJuridicaRepository;
+
+	@Autowired
+	private PessoaFisicaRepository pessoaFisicaRepository;
 	
 	@Autowired
 	private EnderecoRepository enderecoRepository;
@@ -63,13 +69,11 @@ public class PessoaController {
 				pessoaJuridica.getEnderecos().get(p).setRuaLogra(cepDTO.getLogradouro());
 				pessoaJuridica.getEnderecos().get(p).setUf(cepDTO.getUf());
 			}
-		} 
-		else {
+		} else {
 			for (int p = 0; p < pessoaJuridica.getEnderecos().size(); p++) {
 				Endereco enderecoTemp = enderecoRepository.findById(pessoaJuridica.getEnderecos().get(p).getId()).get();
 				if (!enderecoTemp.getCep().equals(pessoaJuridica.getEnderecos().get(p).getCep())) {
-					
-					
+
 					CepDTO cepDTO = pessoaUserService.consultarCep(pessoaJuridica.getEnderecos().get(p).getCep());
 
 					pessoaJuridica.getEnderecos().get(p).setBairro(cepDTO.getBairro());
@@ -77,8 +81,7 @@ public class PessoaController {
 					pessoaJuridica.getEnderecos().get(p).setComplemento(cepDTO.getComplemento());
 					pessoaJuridica.getEnderecos().get(p).setRuaLogra(cepDTO.getLogradouro());
 					pessoaJuridica.getEnderecos().get(p).setUf(cepDTO.getUf());
-					
-					
+
 				}
 			}
 		}
@@ -96,7 +99,7 @@ public class PessoaController {
 			throw new ExceptionLojaki("Pessoa física não pode ser NULL!");
 		}
 		if (pessoaFisica.getId() == null
-				&& pessoaJuridicaRepository.existeCpfCadastradoList(pessoaFisica.getCpf()) != null) {
+				&& pessoaFisicaRepository.existeCpfCadastradoList(pessoaFisica.getCpf()) != null) {
 			throw new ExceptionLojaki("Já existe CPF cadastrado com o número: " + pessoaFisica.getCpf());
 		}
 
@@ -113,5 +116,44 @@ public class PessoaController {
 
 		return new ResponseEntity<CepDTO>(pessoaUserService.consultarCep(cep), HttpStatus.OK);
 	}
-
+	
+	
+	@ResponseBody
+	@GetMapping("**/consultaPfNome/{nome}")
+    public ResponseEntity<List<PessoaFisica>> consultaPfNome(@PathVariable("nome") String nome) {
+       
+		List<PessoaFisica> pessoaFisicaList = pessoaFisicaRepository.pesquisaPorNomePF(nome.trim().toUpperCase());
+       
+		return new ResponseEntity<>(pessoaFisicaList, HttpStatus.OK);
+    }
+	
+	@ResponseBody
+	 @GetMapping("**/consultaPfCpf/{cpf}")
+	    public ResponseEntity<List<PessoaFisica>> consultaPfCpf(@PathVariable("cpf") String cpf) {
+	        
+		List<PessoaFisica> pessoaFisicaList = pessoaFisicaRepository.existeCpfCadastradoList(cpf);
+	        
+	        return new ResponseEntity<>(pessoaFisicaList, HttpStatus.OK);
+	    }
+	
+	@ResponseBody
+	@GetMapping("**/consultaNomePJ/{nome}")
+    public ResponseEntity<List<PessoaJuridica>> consultaNomePJ(@PathVariable("nome") String nome) {
+        
+		List<PessoaJuridica> pessoaJuridicaList = pessoaJuridicaRepository.pesquisaPorNomePJ(nome.trim().toUpperCase());
+       
+		return new ResponseEntity<>(pessoaJuridicaList, HttpStatus.OK);
+    }
+	
+	@ResponseBody
+	 @GetMapping("**/consultaCnpjPJ/{cnpj}")
+	    public ResponseEntity<List<PessoaJuridica>> consultaCnpjPJ(@PathVariable("cnpj") String cnpj) {
+	        
+		List<PessoaJuridica> pessoaJuridicaList = pessoaJuridicaRepository.existeCnpjCadastradoList(cnpj);
+	        
+		return new ResponseEntity<>(pessoaJuridicaList, HttpStatus.OK);
+	    }
+	
+	
+	
 }
