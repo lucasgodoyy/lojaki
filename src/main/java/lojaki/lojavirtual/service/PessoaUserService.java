@@ -12,6 +12,7 @@ import lojaki.lojavirtual.model.PessoaFisica;
 import lojaki.lojavirtual.model.PessoaJuridica;
 import lojaki.lojavirtual.model.Usuario;
 import lojaki.lojavirtual.model.dto.CepDTO;
+import lojaki.lojavirtual.model.dto.ConsultaCnpjDTO;
 import lojaki.lojavirtual.repository.PessoaFisicaRepository;
 import lojaki.lojavirtual.repository.PessoaJuridicaRepository;
 import lojaki.lojavirtual.repository.UsuarioRepository;
@@ -137,6 +138,9 @@ public class PessoaUserService {
 		return new RestTemplate().getForEntity("https://viacep.com.br/ws/" + cep + "/json/", CepDTO.class).getBody();
 	}
 	
+	
+	public ConsultaCnpjDTO consultaCnpjReceitaWS(String cnpj) {
+		return new RestTemplate().getForEntity("https://receitaws.com.br/v1/cnpj/" + cnpj, ConsultaCnpjDTO.class).getBody();	}
 	
 	
 }

@@ -15,14 +15,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lojaki.lojavirtual.ExceptionLojaki;
+import lojaki.lojavirtual.enums.TipoPessoa;
 import lojaki.lojavirtual.model.Endereco;
 import lojaki.lojavirtual.model.PessoaFisica;
 import lojaki.lojavirtual.model.PessoaJuridica;
 import lojaki.lojavirtual.model.dto.CepDTO;
+import lojaki.lojavirtual.model.dto.ConsultaCnpjDTO;
 import lojaki.lojavirtual.repository.EnderecoRepository;
 import lojaki.lojavirtual.repository.PessoaFisicaRepository;
 import lojaki.lojavirtual.repository.PessoaJuridicaRepository;
 import lojaki.lojavirtual.service.PessoaUserService;
+import lojaki.lojavirtual.service.ServiceContagemAcessoAPI;
 import lojaki.lojavirtual.util.ValidaCNPJ;
 import lojaki.lojavirtual.util.ValidaCPF;
 
@@ -41,6 +44,9 @@ public class PessoaController {
 	@Autowired
 	private PessoaUserService pessoaUserService;
 
+	@Autowired
+	private ServiceContagemAcessoAPI serviceContagemAcessoAPI;
+	
 	@ResponseBody
 	@PostMapping(value = "**/salvarPj")
 	public ResponseEntity<PessoaJuridica> salvarPj(@RequestBody @Valid PessoaJuridica pessoaJuridica)
@@ -49,6 +55,11 @@ public class PessoaController {
 		if (pessoaJuridica == null) {
 			throw new ExceptionLojaki("Pessoa jurídica não pode ser NULL!");
 		}
+		
+		if (pessoaJuridica.getTipoPessoa() == null) {
+			throw new ExceptionLojaki("Informe o tipo Jurídico ou Fornecedor da loja");
+		}
+		
 		if (pessoaJuridica.getId() == null
 				&& pessoaJuridicaRepository.existeCnpjCadastrado(pessoaJuridica.getCnpj()) != null) {
 			throw new ExceptionLojaki("Já existe CNPJ cadastrado com o número: " + pessoaJuridica.getCnpj());
@@ -98,6 +109,11 @@ public class PessoaController {
 		if (pessoaFisica == null) {
 			throw new ExceptionLojaki("Pessoa física não pode ser NULL!");
 		}
+		
+		if (pessoaFisica.getTipoPessoa() == null) {
+            pessoaFisica.setTipoPessoa(TipoPessoa.FISICA.name());
+        }
+		
 		if (pessoaFisica.getId() == null
 				&& pessoaFisicaRepository.existeCpfCadastradoList(pessoaFisica.getCpf()) != null) {
 			throw new ExceptionLojaki("Já existe CPF cadastrado com o número: " + pessoaFisica.getCpf());
@@ -111,11 +127,18 @@ public class PessoaController {
 		return new ResponseEntity<>(pessoaFisica, HttpStatus.OK);
 	}
 
+	/*API Externa*/
 	@GetMapping("**/consultaCep/{cep}")
 	public ResponseEntity<CepDTO> consultaCep(@PathVariable("cep") String cep) {
 
 		return new ResponseEntity<CepDTO>(pessoaUserService.consultarCep(cep), HttpStatus.OK);
 	}
+	
+	/*API Externa*/
+	@GetMapping("**/consultaCnpjReceitaWS/{cnpj}")
+    public ResponseEntity<ConsultaCnpjDTO> consultaCnpjReceitaWS(@PathVariable("cnpj") String cnpj) {
+        return new ResponseEntity<ConsultaCnpjDTO>(pessoaUserService.consultaCnpjReceitaWS(cnpj), HttpStatus.OK);
+    }
 	
 	
 	@ResponseBody
@@ -124,6 +147,8 @@ public class PessoaController {
        
 		List<PessoaFisica> pessoaFisicaList = pessoaFisicaRepository.pesquisaPorNomePF(nome.trim().toUpperCase());
        
+		serviceContagemAcessoAPI.atualizaAcessoEndpointPF();
+		
 		return new ResponseEntity<>(pessoaFisicaList, HttpStatus.OK);
     }
 	
