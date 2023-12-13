@@ -31,7 +31,7 @@ public class CategoriaProduto implements Serializable {
 
 	@ManyToOne(targetEntity = Pessoa.class)
 	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
-	private Pessoa empresa;
+	private PessoaJuridica empresa = new PessoaJuridica();
 	
 	
 	public Long getId() {
@@ -50,11 +50,11 @@ public class CategoriaProduto implements Serializable {
 		this.nomeDesc = nomeDesc;
 	}
 
-	public void setEmpresa(Pessoa empresa) {
+	public void setEmpresa(PessoaJuridica empresa) {
 		this.empresa = empresa;
 	}
 	
-	public Pessoa getEmpresa() {
+	public PessoaJuridica getEmpresa() {
 		return empresa;
 	}
 	
