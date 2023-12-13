@@ -98,6 +98,9 @@ public class Produto implements Serializable {
 	private MarcaProduto marcaProduto;
 	
 	
+	
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -250,6 +253,8 @@ public class Produto implements Serializable {
 		return marcaProduto;
 	}
 
+
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

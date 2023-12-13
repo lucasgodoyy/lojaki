@@ -19,6 +19,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import lojaki.lojavirtual.enums.StatusContaPagar;
 
@@ -33,22 +35,24 @@ public class ContaPagar implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_conta_pagar")
 	private Long id;
 
+	@NotNull(message = "Informe o campo descrição da conta a pagar!")
+	@NotEmpty(message = "Informe o campo descrição da conta a pagar!")
 	@Column(nullable = false)
 	private String descricao;
 
-	
+	@NotNull(message = "Informe o campo valor total da conta a pagar!")
 	@Column(nullable = false)
 	private BigDecimal valorTotal;
 
 	
 	private BigDecimal valorDesconto;
 
-	
+	@NotNull(message = "Informe o campo status da conta a pagar!")
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private StatusContaPagar status;
 
-	
+	@NotNull(message = "Informe o campo data de vencimento da conta a pagar!")
 	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dtVencimento;
@@ -67,9 +71,9 @@ public class ContaPagar implements Serializable {
 	@JoinColumn(name = "pessoa_forn_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "pessoa_forn_fk"))
 	private PessoaJuridica pessoaFornecedor;
 	
-	@ManyToOne(targetEntity = Pessoa.class)
+	@ManyToOne(targetEntity = PessoaJuridica.class)
 	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
-	private Pessoa empresa;
+	private PessoaJuridica empresa;
 
 	public Long getId() {
 		return id;
@@ -127,14 +131,15 @@ public class ContaPagar implements Serializable {
 		this.dtPagamento = dtPagamento;
 	}
 
-	public PessoaFisica getPessoa() {
-		return pessoa;
-	}
-
+	
 	public void setPessoa(PessoaFisica pessoa) {
 		this.pessoa = pessoa;
 	}
-
+	
+	public PessoaFisica getPessoa() {
+		return pessoa;
+	}
+	
 	public PessoaJuridica getPessoaFornecedor() {
 		return pessoaFornecedor;
 	}
@@ -143,11 +148,11 @@ public class ContaPagar implements Serializable {
 		this.pessoaFornecedor = pessoaFornecedor;
 	}
 
-	public void setEmpresa(Pessoa empresa) {
+	public void setEmpresa(PessoaJuridica empresa) {
 		this.empresa = empresa;
-	}
+	} 
 	
-	public Pessoa getEmpresa() {
+	public PessoaJuridica getEmpresa() {
 		return empresa;
 	}
 	
