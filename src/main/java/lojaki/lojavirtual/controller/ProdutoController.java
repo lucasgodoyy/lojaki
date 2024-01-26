@@ -124,7 +124,7 @@ public class ProdutoController {
 					
 					String miniImgBase64 = "data:image/png;base64," + DatatypeConverter.printBase64Binary(baos.toByteArray());
 					
-					produto.getImagens().get(x).setImagemMinuatura(miniImgBase64);
+					produto.getImagens().get(x).setImagemMiniatura(base64Image);
 					
 					bufferedImage.flush();
 					resizedImage.flush();
