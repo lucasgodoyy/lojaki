@@ -115,7 +115,7 @@ public class PessoaController {
         }
 		
 		if (pessoaFisica.getId() == null
-				&& pessoaFisicaRepository.existeCpfCadastradoList(pessoaFisica.getCpf()) != null) {
+				&& pessoaFisicaRepository.existeCpfCadastrado(pessoaFisica.getCpf()) != null) {
 			throw new ExceptionLojaki("Já existe CPF cadastrado com o número: " + pessoaFisica.getCpf());
 		}
 

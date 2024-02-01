@@ -1,11 +1,17 @@
 package lojaki.lojavirtual.model;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.br.CNPJ;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "pessoa_juridica")
@@ -33,6 +39,22 @@ public class PessoaJuridica extends Pessoa {
 	
 	
 	private String categoria;
+
+	 @JsonIgnore
+	    @ManyToOne(targetEntity = Pessoa.class)
+	    @JoinColumn(name = "empresa_id", nullable = true, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	    private Pessoa empresa;
+	
+	 
+	
+	public Pessoa getEmpresa() {
+		return empresa;
+	}
+
+
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
+	}
 
 
 	public String getCnpj() {

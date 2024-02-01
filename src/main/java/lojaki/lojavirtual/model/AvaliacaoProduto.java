@@ -18,6 +18,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "avaliacao_produto")
 @SequenceGenerator(name = "seq_avaliacao_produto", sequenceName = "seq_avaliacao_produto", allocationSize = 1, initialValue = 1)
@@ -40,6 +42,7 @@ public class AvaliacaoProduto implements Serializable {
 	@Column(nullable = false)
 	private Integer nota;
 
+	@JsonManagedReference
 	@ManyToOne(targetEntity = PessoaFisica.class)
 	@JoinColumn(name = "pessoa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "pessoa_fk"))
 	private PessoaFisica pessoa;
@@ -50,7 +53,8 @@ public class AvaliacaoProduto implements Serializable {
 
 	
 	@ManyToOne(targetEntity = PessoaJuridica.class)
-	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
+	@JoinColumn(name = "empresa_id", nullable = false, 
+	foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
 	private PessoaJuridica empresa;
 	
 	

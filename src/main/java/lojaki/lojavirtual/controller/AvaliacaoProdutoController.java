@@ -31,7 +31,7 @@ public class AvaliacaoProdutoController {
 	public ResponseEntity<AvaliacaoProduto> salvarAvaliacaoProduto(@RequestBody @Valid AvaliacaoProduto avaliacaoProduto) throws ExceptionLojaki{
 		
 		if (avaliacaoProduto.getEmpresa() == null || (avaliacaoProduto.getEmpresa() != null && avaliacaoProduto.getEmpresa().getId() <= 0)) {
-			 throw new ExceptionLojaki("Informa a empresa dona do registro");
+			 throw new ExceptionLojaki("Informe a empresa dona do registro");
 		}
 		
 		
@@ -53,7 +53,7 @@ public class AvaliacaoProdutoController {
 	
 	@ResponseBody
 	@DeleteMapping(value = "**/deleteAvalicaoPessoa/{idAvaliacao}")
-	public ResponseEntity<?> deleteAvalicaoPessoa(@PathVariable("idAvaliacao") Long idAvaliacao) { 
+	public ResponseEntity<?> deleteAvaliacaoPessoa(@PathVariable("idAvaliacao") Long idAvaliacao) { 
 		
 		avaliacaoProdutoRepository.deleteById(idAvaliacao);
 		
@@ -73,7 +73,8 @@ public class AvaliacaoProdutoController {
 	
 	@ResponseBody
 	@GetMapping(value = "**/avaliacaoPessoa/{idPessoa}")
-	public ResponseEntity<List<AvaliacaoProduto>> avaliacaoPessoa(@PathVariable("idPessoa") Long idPessoa) { 
+	public ResponseEntity<List<AvaliacaoProduto>> 
+	avaliacaoPessoa(@PathVariable("idPessoa") Long idPessoa) { 
 		
 		List<AvaliacaoProduto> avaliacaoProdutos = avaliacaoProdutoRepository.avaliacaoPessoa(idPessoa);
 		

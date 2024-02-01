@@ -18,7 +18,7 @@ public interface PessoaFisicaRepository extends JpaRepository<PessoaFisica, Long
 
     @Query(value = "SELECT pf FROM PessoaFisica pf WHERE pf.cpf = ?1")
     List<PessoaFisica> existeCpfCadastradoList(String cpf);
-	
+    
     @Query(value = "SELECT pf FROM PessoaFisica pf WHERE upper(trim(pf.nome)) LIKE %?1%")
     List<PessoaFisica> pesquisaPorNomePF(String nome);
 	
