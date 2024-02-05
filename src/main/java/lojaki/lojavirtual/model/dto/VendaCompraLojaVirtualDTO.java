@@ -1,6 +1,8 @@
 package lojaki.lojavirtual.model.dto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import lojaki.lojavirtual.model.Endereco;
 import lojaki.lojavirtual.model.Pessoa;
@@ -20,6 +22,18 @@ public class VendaCompraLojaVirtualDTO {
 	private Endereco entrega;
 
 	private BigDecimal valorFrete;
+	
+	
+	private List<ItemVendaDTO> itemVendaLoja = new ArrayList<ItemVendaDTO>();
+	
+	public void setItemVendaLoja(List<ItemVendaDTO> itemVendaLoja) {
+		this.itemVendaLoja = itemVendaLoja;
+	}
+
+	public List<ItemVendaDTO> getItemVendaLoja() {
+		return itemVendaLoja;
+	}
+	
 
 	public void setId(Long id) {
 		this.id = id;
