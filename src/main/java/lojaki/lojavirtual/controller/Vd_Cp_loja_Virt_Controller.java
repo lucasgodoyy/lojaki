@@ -1,6 +1,8 @@
 package lojaki.lojavirtual.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -135,9 +138,13 @@ public class Vd_Cp_loja_Virt_Controller {
 	@GetMapping(value = "**/consultaVendaId/{id}")
 	public ResponseEntity<VendaCompraLojaVirtualDTO> consultaVendaId(@PathVariable("id") Long idVenda) {
 
-		VendaCompraLojaVirtual compraLojaVirtual = vd_Cp_Loja_Virt_Repository.findById(idVenda).orElse(new VendaCompraLojaVirtual());
+		VendaCompraLojaVirtual compraLojaVirtual = vd_Cp_Loja_Virt_Repository.findByIdExclusao(idVenda);
 		
+		if (compraLojaVirtual == null) {
+			compraLojaVirtual = new VendaCompraLojaVirtual();
+		}
 
+		
 		VendaCompraLojaVirtualDTO compraLojaVirtualDTO = new VendaCompraLojaVirtualDTO();
 
 		compraLojaVirtualDTO.setValorTotal(compraLojaVirtual.getValorTotal());
@@ -176,6 +183,130 @@ public class Vd_Cp_loja_Virt_Controller {
 	}
 	
 	
+	@ResponseBody
+	@DeleteMapping(value = "**/deleteVendaTotalBanco2/{idVenda}")
+	public ResponseEntity<String> deleteVendaTotalBanco2(@PathVariable(value = "idVenda") Long idVenda) {
+		
+		vendaService.exclusaoTotalVendaBanco2(idVenda);
+		
+		return new ResponseEntity<String>("Venda excluida logicamente com sucesso!.",HttpStatus.OK);
+		
+	}
+	
+	@ResponseBody
+	@PutMapping(value = "**/ativaRegistroVendaBanco/{idVenda}")
+	public ResponseEntity<String> ativaRegistroVendaBanco(@PathVariable(value = "idVenda") Long idVenda) {
+		
+		vendaService.ativaRegistroVendaBanco(idVenda);
+		
+		return new ResponseEntity<String>("Venda ativada com sucesso!.",HttpStatus.OK);
+		
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/consultaVendaPorProdutoId/{id}")
+	public ResponseEntity<List<VendaCompraLojaVirtualDTO>> consultaVendaPorProduto(@PathVariable("id") Long idProd) {
+
+		List<VendaCompraLojaVirtual> compraLojaVirtual = vd_Cp_Loja_Virt_Repository.vendaPorProduto(idProd);
+		
+		if (compraLojaVirtual == null) {
+			compraLojaVirtual = new ArrayList<VendaCompraLojaVirtual>();
+		}
+		
+		List<VendaCompraLojaVirtualDTO> compraLojaVirtualDTOList = new ArrayList<VendaCompraLojaVirtualDTO>();
+		
+		for (VendaCompraLojaVirtual vcl : compraLojaVirtual) {
+			
+			VendaCompraLojaVirtualDTO compraLojaVirtualDTO = new VendaCompraLojaVirtualDTO();
+	
+			compraLojaVirtualDTO.setValorTotal(vcl.getValorTotal());
+			compraLojaVirtualDTO.setPessoa(vcl.getPessoa());
+	
+			compraLojaVirtualDTO.setEntrega(vcl.getEnderecoEntrega());
+			compraLojaVirtualDTO.setCobranca(vcl.getEnderecoCobranca());
+	
+			compraLojaVirtualDTO.setValorDesc(vcl.getValorDesconto());
+			compraLojaVirtualDTO.setValorFrete(vcl.getValorFrete());
+			compraLojaVirtualDTO.setId(vcl.getId());
+
+			for (ItemVendaLoja item : vcl.getItemVendaLojas()) {
+	
+				ItemVendaDTO itemVendaDTO = new ItemVendaDTO();
+				itemVendaDTO.setQuantidade(item.getQuantidade());
+				itemVendaDTO.setProduto(item.getProduto());
+	
+				compraLojaVirtualDTO.getItemVendaLoja().add(itemVendaDTO);
+			}
+			
+			compraLojaVirtualDTOList.add(compraLojaVirtualDTO);
+		
+		}
+
+		return new ResponseEntity<List<VendaCompraLojaVirtualDTO>>(compraLojaVirtualDTOList, HttpStatus.OK);
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/consultaVendaDinamica/{valor}/{tipoconsulta}")
+	public ResponseEntity<List<VendaCompraLojaVirtualDTO>> 
+						consultaVendaDinamica(@PathVariable("valor") String valor,
+								              @PathVariable("tipoconsulta") String tipoconsulta) {
+
+		List<VendaCompraLojaVirtual> compraLojaVirtual = null;
+		
+		if (tipoconsulta.equalsIgnoreCase("POR_ID_PROD")) {
+			
+			compraLojaVirtual =   vd_Cp_Loja_Virt_Repository.vendaPorProduto(Long.parseLong(valor));
+			
+		}else if (tipoconsulta.equalsIgnoreCase("POR_NOME_PROD")) {
+			compraLojaVirtual = vd_Cp_Loja_Virt_Repository.vendaPorNomeProduto(valor.toUpperCase().trim());
+		}
+		else if (tipoconsulta.equalsIgnoreCase("POR_NOME_CLIENTE")) {
+			compraLojaVirtual = vd_Cp_Loja_Virt_Repository.vendaPorNomeCliente(valor.toUpperCase().trim());
+		}
+		else if (tipoconsulta.equalsIgnoreCase("POR_ENDERECO_COBRANCA")) {
+			compraLojaVirtual = vd_Cp_Loja_Virt_Repository.vendaPorEndereCobranca(valor.toUpperCase().trim());
+		}
+		else if (tipoconsulta.equalsIgnoreCase("POR_ENDERECO_ENTREGA")) {
+			compraLojaVirtual = vd_Cp_Loja_Virt_Repository.vendaPorEnderecoEntrega(valor.toUpperCase().trim());
+		}
+		
+		if (compraLojaVirtual == null) {
+			compraLojaVirtual = new ArrayList<VendaCompraLojaVirtual>();
+		}
+		
+		List<VendaCompraLojaVirtualDTO> compraLojaVirtualDTOList = new ArrayList<VendaCompraLojaVirtualDTO>();
+		
+		for (VendaCompraLojaVirtual vcl : compraLojaVirtual) {
+			
+			VendaCompraLojaVirtualDTO compraLojaVirtualDTO = new VendaCompraLojaVirtualDTO();
+	
+			compraLojaVirtualDTO.setValorTotal(vcl.getValorTotal());
+			compraLojaVirtualDTO.setPessoa(vcl.getPessoa());
+	
+			compraLojaVirtualDTO.setEntrega(vcl.getEnderecoEntrega());
+			compraLojaVirtualDTO.setCobranca(vcl.getEnderecoCobranca());
+	
+			compraLojaVirtualDTO.setValorDesc(vcl.getValorDesconto());
+			compraLojaVirtualDTO.setValorFrete(vcl.getValorFrete());
+			compraLojaVirtualDTO.setId(vcl.getId());
+
+			for (ItemVendaLoja item : vcl.getItemVendaLojas()) {
+	
+				ItemVendaDTO itemVendaDTO = new ItemVendaDTO();
+				itemVendaDTO.setQuantidade(item.getQuantidade());
+				itemVendaDTO.setProduto(item.getProduto());
+	
+				compraLojaVirtualDTO.getItemVendaLoja().add(itemVendaDTO);
+			}
+			
+			compraLojaVirtualDTOList.add(compraLojaVirtualDTO);
+		
+		}
+
+		return new ResponseEntity<List<VendaCompraLojaVirtualDTO>>(compraLojaVirtualDTOList, HttpStatus.OK);
+	}
 	
 	
 }
