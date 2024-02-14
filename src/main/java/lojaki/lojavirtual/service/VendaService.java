@@ -1,5 +1,10 @@
 package lojaki.lojavirtual.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -7,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import lojaki.lojavirtual.model.VendaCompraLojaVirtual;
 import lojaki.lojavirtual.repository.Vd_Cp_Loja_Virt_Repository;
 
 @Service
@@ -49,4 +55,18 @@ public class VendaService {
 	}
 	
 
+	/*HQL (Hibernate) ou JPQL (JPA ou Spring Data)*/
+	public List<VendaCompraLojaVirtual> consultaVendaFaixaData(String data1, String data2) throws ParseException{
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date date1 = dateFormat.parse(data1);
+		Date date2 = dateFormat.parse(data2);
+		
+		
+		return vd_Cp_Loja_Virt_Repository.consultaVendaFaixaData(date1, date2);
+		
+	}
+	
+	
 }
