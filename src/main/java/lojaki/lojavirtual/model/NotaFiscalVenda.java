@@ -43,7 +43,7 @@ public class NotaFiscalVenda implements Serializable {
 	@Column(columnDefinition = "text", nullable = false)
 	private String pdf;
 	
-	
+	@com.fasterxml.jackson.annotation.JsonIgnore
 	@OneToOne
 	@JoinColumn(name = "venda_compra_loja_virt_id", nullable = true, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "venda_compra_loja_virt_fk"))
 	private VendaCompraLojaVirtual vendaCompraLojaVirtual;

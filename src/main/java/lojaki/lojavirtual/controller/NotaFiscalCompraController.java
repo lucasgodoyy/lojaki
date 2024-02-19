@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lojaki.lojavirtual.ExceptionLojaki;
 import lojaki.lojavirtual.model.NotaFiscalCompra;
+import lojaki.lojavirtual.model.NotaFiscalVenda;
 import lojaki.lojavirtual.repository.NotaFiscalCompraRepository;
+import lojaki.lojavirtual.repository.NotaFiscalVendaRepository;
 
 @RestController
 public class NotaFiscalCompraController {
@@ -26,6 +28,9 @@ public class NotaFiscalCompraController {
 	@Autowired
 	private NotaFiscalCompraRepository notaFiscalCompraRepository;
 	
+	
+	@Autowired
+	private NotaFiscalVendaRepository notaFiscalVendaRepository;
 	
 	@ResponseBody 
 	@PostMapping(value = "**/salvarNotaFiscalCompra")
@@ -87,6 +92,38 @@ public class NotaFiscalCompraController {
 		}
 		
 		return new ResponseEntity<NotaFiscalCompra>(notaFiscalCompra, HttpStatus.OK);
+	}
+	
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/obterNotaFiscalCompraDaVenda/{idVenda}")
+	public ResponseEntity<List<NotaFiscalVenda>> obterNotaFiscalCompraDaVenda(@PathVariable("idVenda") Long idVenda) throws ExceptionLojaki { 
+		
+		List<NotaFiscalVenda>  notaFiscalCompra = notaFiscalVendaRepository.buscaNotaPorVenda(idVenda);
+		
+		
+		if (notaFiscalCompra == null) {
+			throw new ExceptionLojaki("Não encontrou Nota Fiscal de venda com código da venda: " + idVenda);
+		}
+		
+		
+		return new ResponseEntity<List<NotaFiscalVenda>>(notaFiscalCompra,HttpStatus.OK);
+	}
+	
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/obterNotaFiscalCompraDaVendaUnico/{idvenda}")
+	public ResponseEntity<NotaFiscalVenda> obterNotaFiscalCompraDaVendaUnico(@PathVariable("idvenda") Long idvenda) throws ExceptionLojaki { 
+		
+		NotaFiscalVenda notaFiscalCompra = notaFiscalVendaRepository.buscaNotaPorVendaUnica(idvenda);
+		
+		if (notaFiscalCompra == null) {
+			throw new ExceptionLojaki("Não encontrou Nota Fiscal de venda com código da venda: " + idvenda);
+		}
+		
+		return new ResponseEntity<NotaFiscalVenda>(notaFiscalCompra, HttpStatus.OK);
 	}
 	
 	

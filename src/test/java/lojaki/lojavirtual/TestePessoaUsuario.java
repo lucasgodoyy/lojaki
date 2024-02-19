@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 
 import junit.framework.TestCase;
+import lojaki.lojavirtual.controller.FormaPagamentoController;
 import lojaki.lojavirtual.controller.PessoaController;
 import lojaki.lojavirtual.enums.TipoEndereco;
 import lojaki.lojavirtual.model.Endereco;
@@ -25,8 +26,21 @@ class TestePessoaUsuario extends TestCase {
 	@Autowired
 	private PessoaController pessoaController;
 
+	
+	@Autowired
+	private FormaPagamentoController formaPagamentoController;
+	
 	@Autowired
 	private PessoaJuridicaRepository pessoaJuridicaRepository;
+	
+	
+	@Test
+	public void testFormaPagamento() {
+		formaPagamentoController.listaFormaPagamento();
+		formaPagamentoController.listaFormaPagamentoidEmpresa(200L);
+		
+		
+	}
 	
 	
 	@Test
