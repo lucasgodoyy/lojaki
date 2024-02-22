@@ -1,5 +1,6 @@
 package lojaki.lojavirtual.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lojaki.lojavirtual.ExceptionLojaki;
 import lojaki.lojavirtual.model.NotaFiscalCompra;
 import lojaki.lojavirtual.model.NotaFiscalVenda;
+import lojaki.lojavirtual.model.dto.ObejtoRequisicaoRelatorioProdCompraNotaFiscalDTO;
 import lojaki.lojavirtual.repository.NotaFiscalCompraRepository;
 import lojaki.lojavirtual.repository.NotaFiscalVendaRepository;
+import lojaki.lojavirtual.service.NotaFiscalCompraService;
 
 @RestController
 public class NotaFiscalCompraController {
@@ -30,7 +33,27 @@ public class NotaFiscalCompraController {
 	
 	
 	@Autowired
+	private NotaFiscalCompraService notaFiscalCompraService;
+	
+	@Autowired
 	private NotaFiscalVendaRepository notaFiscalVendaRepository;
+	
+	
+	@ResponseBody
+	@PostMapping(value = "**/relatorioProdCompradoNotaFiscal")
+	public ResponseEntity<List<ObejtoRequisicaoRelatorioProdCompraNotaFiscalDTO>> relatorioProdCompradoNotaFiscal
+	    (@Valid @RequestBody ObejtoRequisicaoRelatorioProdCompraNotaFiscalDTO obejtoRequisicaoRelatorioProdCompraNotaFiscalDto){
+		
+		List<ObejtoRequisicaoRelatorioProdCompraNotaFiscalDTO> retorno = 
+				new ArrayList<ObejtoRequisicaoRelatorioProdCompraNotaFiscalDTO>();
+		
+		retorno = notaFiscalCompraService.gerarRelatorioProdCompraNota(obejtoRequisicaoRelatorioProdCompraNotaFiscalDto);
+		
+		
+		return new ResponseEntity<List<ObejtoRequisicaoRelatorioProdCompraNotaFiscalDTO>>(retorno, HttpStatus.OK);
+		
+	}
+	
 	
 	@ResponseBody 
 	@PostMapping(value = "**/salvarNotaFiscalCompra")
