@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import lojaki.lojavirtual.model.StatusRastreio;
 
+
+@Transactional
 @Repository
 public interface StatusRastreioRepository extends JpaRepository<StatusRastreio, Long> {
 	

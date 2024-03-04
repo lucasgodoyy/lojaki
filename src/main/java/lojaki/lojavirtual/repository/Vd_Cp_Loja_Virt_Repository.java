@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +76,16 @@ public interface Vd_Cp_Loja_Virt_Repository extends JpaRepository<VendaCompraLoj
 			+ " where i.vendaCompraLojaVirtual.excluido = false and upper(trim(i.vendaCompraLojaVirtual.enderecoEntrega.ruaLogra)) "
 			+ " like %?1%")
 	List<VendaCompraLojaVirtual> vendaPorEnderecoEntrega(String enderecoentrega);
+	
+	
+	@Modifying(flushAutomatically = true)
+	@Query(nativeQuery = true, value = "update vd_cp_loja_virt set codigo_etiqueta = ?1 where id = ?2")
+	void updateEtiqueta(String idEtiqueta, Long idVenda);
+
+	@Modifying(flushAutomatically = true)
+	@Query(nativeQuery = true, value = "update vd_cp_loja_virt set url_imprime_etiqueta = ?1 where id = ?2")
+	void updateURLEtiqueta(String urlEtiqueta, Long id);
+    	
 	
 	
 }
