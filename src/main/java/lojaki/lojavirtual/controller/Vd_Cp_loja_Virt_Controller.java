@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,7 @@ import lojaki.lojavirtual.model.dto.ConsultaFreteDTO;
 import lojaki.lojavirtual.model.dto.EmpresaTransporteDTO;
 import lojaki.lojavirtual.model.dto.EnvioEtiquetaDTO;
 import lojaki.lojavirtual.model.dto.ItemVendaDTO;
+import lojaki.lojavirtual.model.dto.ObjetoPostCarneJuno;
 import lojaki.lojavirtual.model.dto.ProductsEnvioEtiquetaDTO;
 import lojaki.lojavirtual.model.dto.TagsEnvioDto;
 import lojaki.lojavirtual.model.dto.VendaCompraLojaVirtualDTO;
@@ -50,6 +50,7 @@ import lojaki.lojavirtual.repository.EnderecoRepository;
 import lojaki.lojavirtual.repository.NotaFiscalVendaRepository;
 import lojaki.lojavirtual.repository.StatusRastreioRepository;
 import lojaki.lojavirtual.repository.Vd_Cp_Loja_Virt_Repository;
+import lojaki.lojavirtual.service.ServiceJunoBoleto;
 import lojaki.lojavirtual.service.ServiceSendEmail;
 import lojaki.lojavirtual.service.VendaService;
 import okhttp3.MediaType;
@@ -88,6 +89,8 @@ public class Vd_Cp_loja_Virt_Controller {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	@Autowired
+	private ServiceJunoBoleto serviceJunoBoleto;
 	
 	
 	@ResponseBody
@@ -474,6 +477,19 @@ public class Vd_Cp_loja_Virt_Controller {
 		return new ResponseEntity<String>(response.body().string(), HttpStatus.OK);
 	}
 	
+	
+	@ResponseBody
+	@PostMapping(value = "**/gerarBoletoPix")
+	public ResponseEntity<String> gerarBoletoPix(@RequestBody @Valid ObjetoPostCarneJuno objetoPostCarneJuno) throws Exception{
+		return  new ResponseEntity<String>(serviceJunoBoleto.gerarCarneApi(objetoPostCarneJuno), HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@PostMapping(value = "**/cancelarBoletoPix")
+	public ResponseEntity<String> cancelarBoletoPix(@RequestBody @Valid String code) throws Exception{
+		
+		return new ResponseEntity<String>(serviceJunoBoleto.cancelarBoleto(code), HttpStatus.OK);
+	}
 	
 	
 	@ResponseBody
