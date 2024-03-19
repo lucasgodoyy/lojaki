@@ -36,10 +36,15 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter implements H
 		http.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 			.disable().authorizeRequests().antMatchers("/").permitAll()
-			.antMatchers("/index").permitAll()
+			.antMatchers("/index","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
+			.antMatchers(HttpMethod.POST, "/requisicaojunoboleto/**", "/notificacaoapiv2" ,"/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
+			.antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2" ,"/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
 			.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+			/* redireciona ou da um retorno para index quando desloga*/
 			.anyRequest().authenticated().and().logout().logoutSuccessUrl("/index")
+			/*mapeia o logout do sistema*/
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+			/*Filtra as requisicoes para login de JWT*/
 			.and()
 			.addFilterAfter(
 					new JWTLoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class
@@ -50,22 +55,22 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter implements H
 	}
 	
 	
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(implementacaoUserDetailsService)
-			.passwordEncoder(new BCryptPasswordEncoder());
-		
-	}
+			/*Irá consultar o user no banco com Spring Security*/
+			@Override
+			protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+				auth.userDetailsService(implementacaoUserDetailsService)
+					.passwordEncoder(new BCryptPasswordEncoder());
+				
+			}
 	
 	
-	
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-//		web
-//			.ignoring()
-//				.antMatchers(HttpMethod.GET, "/salvarAcesso", "/deleteAcesso")
-//				.antMatchers(HttpMethod.POST, "/salvarAcesso", "/deleteAcesso");
-	}
+			/* Ingnorando URL no momento para nao autenticar */
+			@Override
+			public void configure(WebSecurity web) throws Exception {
+					web.ignoring().
+					antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2" ,"/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**" ,"/webjars/**","/WEB-INF/classes/static/**")
+					.antMatchers(HttpMethod.POST, "/requisicaojunoboleto/**", "/notificacaoapiv2" ,"/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**","/webjars/**","/WEB-INF/classes/static/**");
+			
+			}
 
 }

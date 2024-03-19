@@ -14,6 +14,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 
 @SpringBootApplication
@@ -23,8 +27,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = {"lojaki.*"})
 @EnableJpaRepositories(basePackages = {"lojaki.lojavirtual.repository"})
 @EnableTransactionManagement
-
-public class LojakiApplication implements AsyncConfigurer  {
+@EnableWebMvc
+public class LojakiApplication implements AsyncConfigurer, WebMvcConfigurer  {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LojakiApplication.class, args);
@@ -44,6 +48,18 @@ public class LojakiApplication implements AsyncConfigurer  {
 		executor.setThreadNamePrefix("Assyncrono Thread");
 		executor.initialize();
 		return executor;
+	}
+	
+	
+	@Bean
+	public ViewResolver  viewResolver() {
+		
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		
+		viewResolver.setPrefix("classpath:templates/");
+		viewResolver.setSuffix(".html");
+		
+		return viewResolver;
 	}
 	
 	
