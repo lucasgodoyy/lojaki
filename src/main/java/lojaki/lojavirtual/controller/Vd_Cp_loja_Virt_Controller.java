@@ -47,6 +47,7 @@ import lojaki.lojavirtual.model.dto.VendaCompraLojaVirtualDTO;
 import lojaki.lojavirtual.model.dto.VolumesEnvioEtiquetaDTO;
 import lojaki.lojavirtual.repository.ContaReceberRepository;
 import lojaki.lojavirtual.repository.EnderecoRepository;
+import lojaki.lojavirtual.repository.ItemVendaRepository;
 import lojaki.lojavirtual.repository.NotaFiscalVendaRepository;
 import lojaki.lojavirtual.repository.StatusRastreioRepository;
 import lojaki.lojavirtual.repository.Vd_Cp_Loja_Virt_Repository;
@@ -92,6 +93,8 @@ public class Vd_Cp_loja_Virt_Controller {
 	@Autowired
 	private ServiceJunoBoleto serviceJunoBoleto;
 	
+	@Autowired
+	private ItemVendaRepository itemVendaRepository;
 	
 	@ResponseBody
 	@PostMapping(value = "**/salvarVendaLoja")
@@ -114,7 +117,10 @@ public class Vd_Cp_loja_Virt_Controller {
 		vendaCompraLojaVirtual.setEnderecoEntrega(enderecoEntrega);
 
 		vendaCompraLojaVirtual.getNotaFiscalVenda().setEmpresa(vendaCompraLojaVirtual.getEmpresa());
-
+		
+		
+		vendaCompraLojaVirtual.setStatusVendaLojaVirtual(vendaCompraLojaVirtual.getStatusVendaLojaVirtual());
+		
 		for (int i = 0; i < vendaCompraLojaVirtual.getItemVendaLojas().size(); i++) {
 			vendaCompraLojaVirtual.getItemVendaLojas().get(i).setEmpresa(vendaCompraLojaVirtual.getEmpresa());
 			vendaCompraLojaVirtual.getItemVendaLojas().get(i).setVendaCompraLojaVirtual(vendaCompraLojaVirtual);
@@ -124,7 +130,12 @@ public class Vd_Cp_loja_Virt_Controller {
 		vendaCompraLojaVirtual = vd_Cp_Loja_Virt_Repository.saveAndFlush(vendaCompraLojaVirtual);
 
 		
-		
+		 for (ItemVendaLoja item : vendaCompraLojaVirtual.getItemVendaLojas()) {
+		        // Configurar o item de venda se necessário
+		        
+		        // Salvar o item de venda
+			 itemVendaRepository.saveAndFlush(item);
+		    }
 		
 
 		/* Associa a venda gravada no banco com a nota fiscal */
@@ -185,6 +196,7 @@ public class Vd_Cp_loja_Virt_Controller {
 
 		
 	}
+	
 	
 	
 	
@@ -618,27 +630,9 @@ public class Vd_Cp_loja_Virt_Controller {
 			compraLojaVirtual = new VendaCompraLojaVirtual();
 		}
 
-		VendaCompraLojaVirtualDTO compraLojaVirtualDTO = new VendaCompraLojaVirtualDTO();
+		VendaCompraLojaVirtualDTO compraLojaVirtualDTO = vendaService.consultaVenda(compraLojaVirtual);
 
-		compraLojaVirtualDTO.setValorTotal(compraLojaVirtual.getValorTotal());
-		compraLojaVirtualDTO.setPessoa(compraLojaVirtual.getPessoa());
-
-		compraLojaVirtualDTO.setEntrega(compraLojaVirtual.getEnderecoEntrega());
-		compraLojaVirtualDTO.setCobranca(compraLojaVirtual.getEnderecoCobranca());
-
-		compraLojaVirtualDTO.setValorDesc(compraLojaVirtual.getValorDesconto());
-		compraLojaVirtualDTO.setValorFrete(compraLojaVirtual.getValorFrete());
-		compraLojaVirtualDTO.setId(compraLojaVirtual.getId());
-
-		for (ItemVendaLoja item : compraLojaVirtual.getItemVendaLojas()) {
-
-			ItemVendaDTO itemVendaDTO = new ItemVendaDTO();
-			itemVendaDTO.setQuantidade(item.getQuantidade());
-			itemVendaDTO.setProduto(item.getProduto());
-
-			compraLojaVirtualDTO.getItemVendaLoja().add(itemVendaDTO);
-		}
-
+		
 		return new ResponseEntity<VendaCompraLojaVirtualDTO>(compraLojaVirtualDTO, HttpStatus.OK);
 	}
 

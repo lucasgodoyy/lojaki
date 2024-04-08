@@ -2,6 +2,7 @@ package lojaki.lojavirtual;
 
 import java.util.concurrent.Executor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -19,6 +20,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import lojaki.lojavirtual.service.ServiceAssasBoleto;
+
 
 @SpringBootApplication
 @EnableAsync
@@ -30,8 +33,18 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @EnableWebMvc
 public class LojakiApplication implements AsyncConfigurer, WebMvcConfigurer  {
 
+	
+	
+	@Autowired
+	private ServiceAssasBoleto serviceAssasBoleto;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(LojakiApplication.class, args);
+		
+		
+		
+		
+		
 		
 		System.out.println(new BCryptPasswordEncoder().encode("123"));
 		

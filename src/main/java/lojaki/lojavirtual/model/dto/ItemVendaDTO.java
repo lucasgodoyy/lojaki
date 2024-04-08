@@ -7,6 +7,8 @@ public class ItemVendaDTO {
 	private Double quantidade;
 
 	private Produto produto;
+	
+	
 
 	public Double getQuantidade() {
 		return quantidade;
