@@ -92,7 +92,12 @@ public class ServiceAssasBoleto implements Serializable {
 				.header("Content-Type", "application/json").header("access_token", AsaasApiPagamentoStatus.API_KEY)
 				.get(ClientResponse.class);
 
-		LinkedHashMap<String, Object> parser = new JSONParser(clientResponse.getEntity(String.class)).parseObject();
+		String responseBody  = clientResponse.getEntity(String.class);
+		
+		System.out.println(responseBody);
+		
+		LinkedHashMap<String, Object> parser = new JSONParser(responseBody).parseObject();
+		
 		clientResponse.close();
 
 		/* Para saber se existe um client */
@@ -119,6 +124,8 @@ public class ServiceAssasBoleto implements Serializable {
 					.header("Content-Type", "application/json").header("access_token", AsaasApiPagamentoStatus.API_KEY)
 					.post(ClientResponse.class, new ObjectMapper().writeValueAsBytes(clienteAsaasApiPagamento));
 
+			
+			
 			LinkedHashMap<String, Object> parser2 = new JSONParser(clientResponse2.getEntity(String.class))
 					.parseObject();
 			clientResponse2.close();
@@ -171,10 +178,23 @@ public class ServiceAssasBoleto implements Serializable {
 		/* Buscando parcelas geradas */
 
 		LinkedHashMap<String, Object> parser = new JSONParser(stringRetorno).parseObject();
-		String installment = parser.get("installment").toString();
+	
+		Object installmentObject = parser.get("installment");
+		String installment = null;
+		
+		if(installmentObject != null ) {
+			 installment = installmentObject.toString();
+			
+		} else {
+			System.out.println("installmentObject é null " + installmentObject);
+		}
+		
+		
+		
 		Client client2 = new HostIgnoringCliente(AsaasApiPagamentoStatus.URL_API_ASAAS).hostIgnoringCliente();
 		WebResource webResource2 = client2
 				.resource(AsaasApiPagamentoStatus.URL_API_ASAAS + "payments?installment=" + installment);
+		
 		ClientResponse clientResponse2 = webResource2.accept("application/json;charset=UTF-8")
 				.header("Content-Type", "application/json").header("access_token", AsaasApiPagamentoStatus.API_KEY)
 				.get(ClientResponse.class);
@@ -228,8 +248,8 @@ public class ServiceAssasBoleto implements Serializable {
 	public ObjetoQrCodePixAsaas buscarQrCodeCodigoPix(String idCobranca) throws Exception {
 
 		Client client = new HostIgnoringCliente(AsaasApiPagamentoStatus.URL_API_ASAAS).hostIgnoringCliente();
-		WebResource webResource = client
-				.resource(AsaasApiPagamentoStatus.URL_API_ASAAS + "payments/" + idCobranca + "/pixQrCode");
+		WebResource webResource = 
+				client.resource(AsaasApiPagamentoStatus.URL_API_ASAAS + "payments/" + idCobranca + "/pixQrCode");
 
 		ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8")
 				.header("Content-Type", "application/json").header("access_token", AsaasApiPagamentoStatus.API_KEY)

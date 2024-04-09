@@ -15,6 +15,6 @@ public class AsaasApiPagamentoStatus {
 	
 	public static String URL_API_ASAAS = "https://www.asaas.com/api/v3/";
 	
-	public static String API_KEY = "$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDA0MDc0MDM6OiRhYWNoXzVmMTljMzJkLTUzOGQtNDRiNi04MTUyLWYyMDIwYWFkZWEyZA==";
+	public static String API_KEY = "$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDA0MDc0MDM6OiRhYWNoX2ZmMzM3YjkwLTJkNmEtNDM3Ni05NzRkLWQ4ZjBhNzliZTEwMQ==";
 
 }
