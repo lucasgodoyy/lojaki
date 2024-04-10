@@ -27,33 +27,6 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter implements H
 	@Autowired
 	private ImplementacaoUserDetailsService implementacaoUserDetailsService;
 	
-	
-	
-	
-	
-/*	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf()
-			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-			.disable().authorizeRequests().antMatchers("/").permitAll()
-			.antMatchers("/index","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
-			.antMatchers(HttpMethod.POST, "/requisicaojunoboleto/**", "/notificacaoapiv2" ,"/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
-			.antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2" ,"/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
-			.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-			/* redireciona ou da um retorno para index quando desloga*/ 
-	/*		.anyRequest().authenticated().and().logout().logoutSuccessUrl("/index")
-			/*mapeia o logout do sistema*/
-			/*	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-			/*Filtra as requisicoes para login de JWT*/
-			/*	.and()
-			.addFilterAfter(
-					new JWTLoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class
-							)
-			.addFilterBefore(
-					new JwtApiAutenticacaoFilter(), UsernamePasswordAuthenticationFilter.class
-							);
-	} */
-	
 
 
 	@Override
@@ -63,8 +36,8 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter implements H
 		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 		.disable().authorizeRequests().antMatchers("/").permitAll()
 		.antMatchers("/index","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
-		.antMatchers(HttpMethod.POST, "/requisicaojunoboleto/**", "/notificacaoapiv2","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
-		.antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
+		.antMatchers(HttpMethod.POST, "/requisicaojunoboleto/**", "/notificacaoapiv2","/notificacaoapiassas","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2","/notificacaoapiassas","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**").permitAll()
 		.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 		
 		/* redireciona ou da um retorno para index quando desloga*/
@@ -97,8 +70,8 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter implements H
 			@Override
 			public void configure(WebSecurity web) throws Exception {
 				web.ignoring().
-				    antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**","/webjars/**","/WEB-INF/classes/static/**")
-				   .antMatchers(HttpMethod.POST,"/requisicaojunoboleto/**", "/notificacaoapiv2","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**","/webjars/**","/WEB-INF/classes/static/**");
+				    antMatchers(HttpMethod.GET, "/requisicaojunoboleto/**", "/notificacaoapiv2","/notificacaoapiassas","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**","/webjars/**","/WEB-INF/classes/static/**")
+				   .antMatchers(HttpMethod.POST,"/requisicaojunoboleto/**", "/notificacaoapiv2","/notificacaoapiassas","/pagamento/**","/resources/**","/static/**","/templates/**","classpath:/static/**","classpath:/resources/**","classpath:/templates/**","/webjars/**","/WEB-INF/classes/static/**");
 				/* Ingnorando URL no momento para nao autenticar */
 			}
 

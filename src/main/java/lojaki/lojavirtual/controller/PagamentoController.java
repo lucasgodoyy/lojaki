@@ -100,7 +100,7 @@ import lojaki.lojavirtual.util.ValidaCPF;
 	
 	
 	@RequestMapping(method = RequestMethod.POST, value = "**/finalizarCompraCartao")
-	public ResponseEntity<String> finalizarCompraCartaoAsaas(
+	public ResponseEntity<String> finalizarCompraCartao(
 			@RequestParam("cardNumber") String cardNumber,
 			@RequestParam("holderName") String holderName,
 			@RequestParam("securityCode") String securityCode,
@@ -287,7 +287,7 @@ import lojaki.lojavirtual.util.ValidaCPF;
 	
 	
 	@RequestMapping(method = RequestMethod.POST, value = "**/finalizarCompraCartaoJuno")
-	public ResponseEntity<String> finalizarCompraCartao(
+	public ResponseEntity<String> finalizarCompraCartaoJuno(
 			@RequestParam("cardHash") String cardHash,
 			@RequestParam("cardNumber") String cardNumber,
 			@RequestParam("holderName") String holderName,

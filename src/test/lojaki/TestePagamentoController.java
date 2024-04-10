@@ -54,7 +54,7 @@ public class TestePagamentoController extends TestCase{
 	
 	@Test
 	public void testfinalizarCompraCartaoAsaas() throws Exception {
-		pagamentoController.finalizarCompraCartaoAsaas("5126462892278565", "Alex F Egidio",
+		pagamentoController.finalizarCompraCartao("5126462892278565", "Alex F Egidio",
 													  "612", "06",
 													  "2025", 15L, "05916564937",
 													  2, "87025758", "Pioneiro antonio de ganello",

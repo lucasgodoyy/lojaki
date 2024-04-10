@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
+<headeta charset="UTF-8">
 <title>Insert title here</title>
 
 
@@ -172,10 +171,13 @@
          <div class="form-group col-md-6">
            <span id="valorParaCompra" style="width: 100%;height: 30px; font-size: 19px;" th:text="@{'TOTAL R$: ' + ${venda.valorTotal}}">TOTAL R$:</span>
          </div>
-         <div class="form-group col-md-6">
-           <span id="valorParaDesc" style="width: 100%;height: 30px; font-size: 19px;" th:text="@{'DESC. R$: ' + ${venda.valorDesc}}">DESC. R$:</span>
-         </div>
-        </div>
+       
+       <div class="form-group col-md-6">
+    <span id="valorParaDesc" style="width: 100%; height: 30px; font-size: 19px;">
+        DESCONTO R$: <span th:if="${venda.valorDesc != null}" th:text="${venda.valorDesc}"></span>
+        <span th:unless="${venda.valorDesc != null}">Sem cupom</span>
+    </span>
+</div>
         
        <div class="form-row">
          <div class="form-group col-md-6">
@@ -386,10 +388,7 @@
 	  var isValidCardData =  cardData != null;
 	  
 	  
-	/*  console.info('isValidCardData' + isValidCardData);
-	  console.info('isValidExpireDate' + isValidExpireDate);
-	  console.info('isValidSecurityCode' + isValidSecurityCode);
-	 console.info('isValidCardNumber' + isValidCardNumber);*/
+	
 	  
 	  if (isValidCardData && isValidExpireDate && isValidSecurityCode && isValidCardNumber){
 		  
