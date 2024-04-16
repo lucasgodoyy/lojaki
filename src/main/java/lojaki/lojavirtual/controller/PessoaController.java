@@ -19,11 +19,13 @@ import lojaki.lojavirtual.enums.TipoPessoa;
 import lojaki.lojavirtual.model.Endereco;
 import lojaki.lojavirtual.model.PessoaFisica;
 import lojaki.lojavirtual.model.PessoaJuridica;
+import lojaki.lojavirtual.model.Usuario;
 import lojaki.lojavirtual.model.dto.CepDTO;
 import lojaki.lojavirtual.model.dto.ConsultaCnpjDTO;
 import lojaki.lojavirtual.repository.EnderecoRepository;
 import lojaki.lojavirtual.repository.PessoaFisicaRepository;
 import lojaki.lojavirtual.repository.PessoaJuridicaRepository;
+import lojaki.lojavirtual.repository.UsuarioRepository;
 import lojaki.lojavirtual.service.PessoaUserService;
 import lojaki.lojavirtual.service.ServiceContagemAcessoAPI;
 import lojaki.lojavirtual.util.ValidaCNPJ;
@@ -46,6 +48,25 @@ public class PessoaController {
 
 	@Autowired
 	private ServiceContagemAcessoAPI serviceContagemAcessoAPI;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+	
+	@ResponseBody
+	@PostMapping(value = "**/recuperarSenha")
+	public ResponseEntity<String> recuperarAcesso(@RequestBody String login) {
+		
+		Usuario usuario = usuarioRepository.findUserByLogin(login);
+		
+		if(usuario == null) {
+			return new ResponseEntity<String>("Usuário não encontrado", HttpStatus.OK);
+			
+		}
+		
+		
+		
+		return new ResponseEntity<String>("Senha enviada para o e-mail", HttpStatus.OK);
+	}
 	
 	@ResponseBody
 	@PostMapping(value = "**/salvarPj")
