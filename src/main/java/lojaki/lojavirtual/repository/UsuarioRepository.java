@@ -12,6 +12,12 @@ import lojaki.lojavirtual.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 	
+	@Transactional
+	@Modifying(flushAutomatically = true, clearAutomatically = true)
+	@Query(value = "UPDATE Usuario SET senha = ?1 WHERE login = ?2", nativeQuery = true)
+	void updateSenhaUser(String senha, String login);
+
+
 	@Query("SELECT u FROM Usuario u WHERE u.login = ?1")
 	Usuario findUserByLogin(String login);
 

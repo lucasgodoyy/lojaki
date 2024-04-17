@@ -1,16 +1,21 @@
 package lojaki.lojavirtual.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.UUID;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,12 +27,14 @@ import lojaki.lojavirtual.model.PessoaJuridica;
 import lojaki.lojavirtual.model.Usuario;
 import lojaki.lojavirtual.model.dto.CepDTO;
 import lojaki.lojavirtual.model.dto.ConsultaCnpjDTO;
+import lojaki.lojavirtual.model.dto.MensagemSenhaDTO;
 import lojaki.lojavirtual.repository.EnderecoRepository;
 import lojaki.lojavirtual.repository.PessoaFisicaRepository;
 import lojaki.lojavirtual.repository.PessoaJuridicaRepository;
 import lojaki.lojavirtual.repository.UsuarioRepository;
 import lojaki.lojavirtual.service.PessoaUserService;
 import lojaki.lojavirtual.service.ServiceContagemAcessoAPI;
+import lojaki.lojavirtual.service.ServiceSendEmail;
 import lojaki.lojavirtual.util.ValidaCNPJ;
 import lojaki.lojavirtual.util.ValidaCPF;
 
@@ -52,21 +59,44 @@ public class PessoaController {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	
+	@Autowired
+	private ServiceSendEmail serviceSendEmail;
+	
 	@ResponseBody
 	@PostMapping(value = "**/recuperarSenha")
-	public ResponseEntity<String> recuperarAcesso(@RequestBody String login) {
+	public ResponseEntity<MensagemSenhaDTO> recuperarAcesso(@RequestBody String login) throws UnsupportedEncodingException, MessagingException {
 		
 		Usuario usuario = usuarioRepository.findUserByLogin(login);
 		
 		if(usuario == null) {
-			return new ResponseEntity<String>("Usuário não encontrado", HttpStatus.OK);
+			return new ResponseEntity<MensagemSenhaDTO>(new MensagemSenhaDTO("Usuário não encontrado"), HttpStatus.OK);
 			
 		}
 		
+		String senha = UUID.randomUUID().toString();
+		
+		senha = senha.substring(0, 6);
+		
+		String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
+		
+		System.out.println("*******-----------****************----------************");
+		System.out.println("nova senha " + senha);
+		
+		usuarioRepository.updateSenhaUser(senhaCriptografada, login);
 		
 		
-		return new ResponseEntity<String>("Senha enviada para o e-mail", HttpStatus.OK);
+	//	StringBuilder msgEmail = new StringBuilder();
+	//	msgEmail.append("<b>Sua senha nova é <b>").append(senha);
+		
+	//	serviceSendEmail.enviarEmailHtml("Nova senha", senha, usuario.getPessoa().getEmail());
+		
+		return new ResponseEntity<MensagemSenhaDTO>(new MensagemSenhaDTO("Senha enviada para o e-mail"), HttpStatus.OK);
 	}
+	
+	
+		
+		
 	
 	@ResponseBody
 	@PostMapping(value = "**/salvarPj")
