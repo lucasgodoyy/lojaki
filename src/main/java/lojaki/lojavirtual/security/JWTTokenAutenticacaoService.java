@@ -56,7 +56,7 @@ public class JWTTokenAutenticacaoService {
 		
 		liberarCorsPolicy(response);
 		
-		response.getWriter().write("{\"Authorization\": \"" + token + "\"}");
+		response.getWriter().write("{\"Authorization\": \"" + token + "\", \"username\" : \"" + username + "\"}");
 	}
 	
 	

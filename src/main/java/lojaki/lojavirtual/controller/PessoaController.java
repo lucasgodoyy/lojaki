@@ -96,6 +96,20 @@ public class PessoaController {
 	
 	
 		
+	@ResponseBody
+	@GetMapping(value = "**/possuiAcesso/{username}/{role}")
+	public ResponseEntity<Boolean> possuiAcesso(@PathVariable("username") String username, 
+			@PathVariable("role") String role)
+			throws ExceptionLojaki {
+				
+		String sqlRole = "'" + role.replaceAll(",", "','") + "'";
+		
+		Boolean possuiAcesso = pessoaUserService.possuiAcesso(username, sqlRole);
+		
+		return new ResponseEntity<Boolean>(possuiAcesso, HttpStatus.OK);
+		
+	}
+	
 		
 	
 	@ResponseBody
