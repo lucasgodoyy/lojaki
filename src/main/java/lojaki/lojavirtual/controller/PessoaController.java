@@ -46,7 +46,7 @@ public class PessoaController {
 
 	@Autowired
 	private PessoaFisicaRepository pessoaFisicaRepository;
-	
+
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 
@@ -55,63 +55,58 @@ public class PessoaController {
 
 	@Autowired
 	private ServiceContagemAcessoAPI serviceContagemAcessoAPI;
-	
+
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
-	
+
 	@Autowired
 	private ServiceSendEmail serviceSendEmail;
-	
+
 	@ResponseBody
 	@PostMapping(value = "**/recuperarSenha")
-	public ResponseEntity<MensagemSenhaDTO> recuperarAcesso(@RequestBody String login) throws UnsupportedEncodingException, MessagingException {
-		
+	public ResponseEntity<MensagemSenhaDTO> recuperarAcesso(@RequestBody String login)
+			throws UnsupportedEncodingException, MessagingException {
+
 		Usuario usuario = usuarioRepository.findUserByLogin(login);
-		
-		if(usuario == null) {
+
+		if (usuario == null) {
 			return new ResponseEntity<MensagemSenhaDTO>(new MensagemSenhaDTO("Usuário não encontrado"), HttpStatus.OK);
-			
+
 		}
-		
+
 		String senha = UUID.randomUUID().toString();
-		
+
 		senha = senha.substring(0, 6);
-		
+
 		String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
-		
+
 		System.out.println("*******-----------****************----------************");
 		System.out.println("nova senha " + senha);
-		
+
 		usuarioRepository.updateSenhaUser(senhaCriptografada, login);
-		
-		
-	//	StringBuilder msgEmail = new StringBuilder();
-	//	msgEmail.append("<b>Sua senha nova é <b>").append(senha);
-		
-	//	serviceSendEmail.enviarEmailHtml("Nova senha", senha, usuario.getPessoa().getEmail());
-		
+
+		// StringBuilder msgEmail = new StringBuilder();
+		// msgEmail.append("<b>Sua senha nova é <b>").append(senha);
+
+		// serviceSendEmail.enviarEmailHtml("Nova senha", senha,
+		// usuario.getPessoa().getEmail());
+
 		return new ResponseEntity<MensagemSenhaDTO>(new MensagemSenhaDTO("Senha enviada para o e-mail"), HttpStatus.OK);
 	}
-	
-	
-		
+
 	@ResponseBody
 	@GetMapping(value = "**/possuiAcesso/{username}/{role}")
-	public ResponseEntity<Boolean> possuiAcesso(@PathVariable("username") String username, 
-			@PathVariable("role") String role)
-			throws ExceptionLojaki {
-				
+	public ResponseEntity<Boolean> possuiAcesso(@PathVariable("username") String username,
+			@PathVariable("role") String role) throws ExceptionLojaki {
+
 		String sqlRole = "'" + role.replaceAll(",", "','") + "'";
-		
+
 		Boolean possuiAcesso = pessoaUserService.possuiAcesso(username, sqlRole);
-		
+
 		return new ResponseEntity<Boolean>(possuiAcesso, HttpStatus.OK);
-		
+
 	}
-	
-		
-	
+
 	@ResponseBody
 	@PostMapping(value = "**/salvarPj")
 	public ResponseEntity<PessoaJuridica> salvarPj(@RequestBody @Valid PessoaJuridica pessoaJuridica)
@@ -120,11 +115,11 @@ public class PessoaController {
 		if (pessoaJuridica == null) {
 			throw new ExceptionLojaki("Pessoa jurídica não pode ser NULL!");
 		}
-		
+
 		if (pessoaJuridica.getTipoPessoa() == null) {
 			throw new ExceptionLojaki("Informe o tipo Jurídico ou Fornecedor da loja");
 		}
-		
+
 		if (pessoaJuridica.getId() == null
 				&& pessoaJuridicaRepository.existeCnpjCadastrado(pessoaJuridica.getCnpj()) != null) {
 			throw new ExceptionLojaki("Já existe CNPJ cadastrado com o número: " + pessoaJuridica.getCnpj());
@@ -174,13 +169,12 @@ public class PessoaController {
 		if (pessoaFisica == null) {
 			throw new ExceptionLojaki("Pessoa física não pode ser NULL!");
 		}
-		
+
 		if (pessoaFisica.getTipoPessoa() == null) {
-            pessoaFisica.setTipoPessoa(TipoPessoa.FISICA.name());
-        }
-		
-		if (pessoaFisica.getId() == null
-				&& pessoaFisicaRepository.existeCpfCadastrado(pessoaFisica.getCpf()) != null) {
+			pessoaFisica.setTipoPessoa(TipoPessoa.FISICA.name());
+		}
+
+		if (pessoaFisica.getId() == null && pessoaFisicaRepository.existeCpfCadastrado(pessoaFisica.getCpf()) != null) {
 			throw new ExceptionLojaki("Já existe CPF cadastrado com o número: " + pessoaFisica.getCpf());
 		}
 
@@ -192,58 +186,55 @@ public class PessoaController {
 		return new ResponseEntity<>(pessoaFisica, HttpStatus.OK);
 	}
 
-	/*API Externa*/
+	/* API Externa */
 	@GetMapping("**/consultaCep/{cep}")
 	public ResponseEntity<CepDTO> consultaCep(@PathVariable("cep") String cep) {
 
 		return new ResponseEntity<CepDTO>(pessoaUserService.consultarCep(cep), HttpStatus.OK);
 	}
-	
-	/*API Externa*/
+
+	/* API Externa */
 	@GetMapping("**/consultaCnpjReceitaWS/{cnpj}")
-    public ResponseEntity<ConsultaCnpjDTO> consultaCnpjReceitaWS(@PathVariable("cnpj") String cnpj) {
-        return new ResponseEntity<ConsultaCnpjDTO>(pessoaUserService.consultaCnpjReceitaWS(cnpj), HttpStatus.OK);
-    }
-	
-	
+	public ResponseEntity<ConsultaCnpjDTO> consultaCnpjReceitaWS(@PathVariable("cnpj") String cnpj) {
+		return new ResponseEntity<ConsultaCnpjDTO>(pessoaUserService.consultaCnpjReceitaWS(cnpj), HttpStatus.OK);
+	}
+
 	@ResponseBody
 	@GetMapping("**/consultaPfNome/{nome}")
-    public ResponseEntity<List<PessoaFisica>> consultaPfNome(@PathVariable("nome") String nome) {
-       
+	public ResponseEntity<List<PessoaFisica>> consultaPfNome(@PathVariable("nome") String nome) {
+
 		List<PessoaFisica> pessoaFisicaList = pessoaFisicaRepository.pesquisaPorNomePF(nome.trim().toUpperCase());
-       
+
 		serviceContagemAcessoAPI.atualizaAcessoEndpointPF();
-		
+
 		return new ResponseEntity<>(pessoaFisicaList, HttpStatus.OK);
-    }
-	
+	}
+
 	@ResponseBody
-	 @GetMapping("**/consultaPfCpf/{cpf}")
-	    public ResponseEntity<List<PessoaFisica>> consultaPfCpf(@PathVariable("cpf") String cpf) {
-	        
+	@GetMapping("**/consultaPfCpf/{cpf}")
+	public ResponseEntity<List<PessoaFisica>> consultaPfCpf(@PathVariable("cpf") String cpf) {
+
 		List<PessoaFisica> pessoaFisicaList = pessoaFisicaRepository.existeCpfCadastradoList(cpf);
-	        
-	        return new ResponseEntity<>(pessoaFisicaList, HttpStatus.OK);
-	    }
-	
+
+		return new ResponseEntity<>(pessoaFisicaList, HttpStatus.OK);
+	}
+
 	@ResponseBody
 	@GetMapping("**/consultaNomePJ/{nome}")
-    public ResponseEntity<List<PessoaJuridica>> consultaNomePJ(@PathVariable("nome") String nome) {
-        
+	public ResponseEntity<List<PessoaJuridica>> consultaNomePJ(@PathVariable("nome") String nome) {
+
 		List<PessoaJuridica> pessoaJuridicaList = pessoaJuridicaRepository.pesquisaPorNomePJ(nome.trim().toUpperCase());
-       
+
 		return new ResponseEntity<>(pessoaJuridicaList, HttpStatus.OK);
-    }
-	
+	}
+
 	@ResponseBody
-	 @GetMapping("**/consultaCnpjPJ/{cnpj}")
-	    public ResponseEntity<List<PessoaJuridica>> consultaCnpjPJ(@PathVariable("cnpj") String cnpj) {
-	        
+	@GetMapping("**/consultaCnpjPJ/{cnpj}")
+	public ResponseEntity<List<PessoaJuridica>> consultaCnpjPJ(@PathVariable("cnpj") String cnpj) {
+
 		List<PessoaJuridica> pessoaJuridicaList = pessoaJuridicaRepository.existeCnpjCadastradoList(cnpj);
-	        
+
 		return new ResponseEntity<>(pessoaJuridicaList, HttpStatus.OK);
-	    }
-	
-	
-	
+	}
+
 }

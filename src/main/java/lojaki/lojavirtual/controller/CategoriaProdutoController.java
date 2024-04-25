@@ -1,8 +1,13 @@
 package lojaki.lojavirtual.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,7 +30,7 @@ public class CategoriaProdutoController {
 			throws ExceptionLojaki {
 
 		if (categoriaProduto.getEmpresa() == null || categoriaProduto.getEmpresa().getId() == null) {
-			throw new ExceptionLojaki("A empre seve ser informada!");
+			throw new ExceptionLojaki("A empresa seve ser informada!");
 		}
 		
 		if (categoriaProduto.getId() == null
@@ -34,7 +39,7 @@ public class CategoriaProdutoController {
 		}
 		
 
-		CategoriaProduto categoriaSalva = categoriaProdutoRepository.save(categoriaProduto);
+		CategoriaProduto categoriaSalva = categoriaProdutoRepository.saveAndFlush(categoriaProduto);
 
 		CategoriaProdutoDTO categoriaProdutoDTO = new CategoriaProdutoDTO();
 
@@ -46,15 +51,54 @@ public class CategoriaProdutoController {
 		return new ResponseEntity<CategoriaProdutoDTO>(categoriaProdutoDTO, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "**/deleteCategoria")
+	
+	@ResponseBody
+	@GetMapping(value = "**/buscarPorDescCatgoria/{desc}")
+	public ResponseEntity<List<CategoriaProduto>> carregarListaCategoria(@PathVariable("desc") String desc) { 
+		
+		List<CategoriaProduto> acesso = categoriaProdutoRepository.buscarCategoriaDesc(desc.toUpperCase());
+		
+		return new ResponseEntity<List<CategoriaProduto>>(acesso,HttpStatus.OK);
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/buscarPorId/{id}")
+	public ResponseEntity<CategoriaProduto> carregarListaCategoria(@PathVariable("id") Long id) {
+		
+		
+		CategoriaProduto categoriaProduto = categoriaProdutoRepository.findById(id).orElse(null);
+		
+		
+		return new ResponseEntity<CategoriaProduto>(categoriaProduto, HttpStatus.OK);
+		
+		
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/listarCategoria/{empresaId}")
+	public ResponseEntity<List<CategoriaProduto>> buscarPorDesc(@PathVariable("empresaId") Long empresaId) { 
+		
+		List<CategoriaProduto> listaCategoria = categoriaProdutoRepository.buscarCategoriaPorEmpresa(empresaId);
+		
+		return new ResponseEntity<List<CategoriaProduto>>(listaCategoria,HttpStatus.OK);
+	}
+	
+	
+	
+	
+	@PostMapping(value = "**/deletarCategoria")
 	public ResponseEntity<String> deleteCategoria(@RequestBody CategoriaProduto categoriaProduto) {
 		if (!categoriaProdutoRepository.findById(categoriaProduto.getId()).isPresent()) {
-			return new ResponseEntity<>("Categoria já foi removida!", HttpStatus.OK);
+			
+			
+			
+			return new ResponseEntity<String>("Categoria não existe ou já foi removida", HttpStatus.OK);
 		}
 
 		categoriaProdutoRepository.deleteById(categoriaProduto.getId());
-		return new ResponseEntity<>("Categoria removida com sucesso!", HttpStatus.OK);
+		return new ResponseEntity<String>("Categoria removida com sucesso", HttpStatus.OK);
 	}
-	
 
 }

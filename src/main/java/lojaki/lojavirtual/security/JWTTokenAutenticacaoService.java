@@ -56,7 +56,13 @@ public class JWTTokenAutenticacaoService {
 		
 		liberarCorsPolicy(response);
 		
-		response.getWriter().write("{\"Authorization\": \"" + token + "\", \"username\" : \"" + username + "\"}");
+		
+		Usuario usuario = ApplicationContextLoad.getApplicationContext()
+				.getBean(UsuarioRepository.class)
+				.findUserByLogin(username);
+		
+		
+		response.getWriter().write("{\"Authorization\": \"" + token + "\", \"username\" : \"" + username + "\" , \"empresa\" : \"" + usuario.getEmpresa().getId() + "\"}");
 	}
 	
 	
