@@ -21,8 +21,13 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       
+<<<<<<< HEAD
       <img src="/resource/static/img/captura.png" style="max-width: 100%;">
       /project-imgs/pagamento.png
+=======
+      <img src="../resource/static/img/captura.png" style="max-width: 100%;">
+      
+>>>>>>> e6f6731fd9225e062eaf9189933abd992d88eb40
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
