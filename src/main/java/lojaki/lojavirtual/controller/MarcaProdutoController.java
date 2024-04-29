@@ -5,6 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lojaki.lojavirtual.ExceptionLojaki;
+import lojaki.lojavirtual.model.CategoriaProduto;
 import lojaki.lojavirtual.model.MarcaProduto;
 import lojaki.lojavirtual.repository.MarcaRepository;
 
@@ -108,5 +112,34 @@ public class MarcaProdutoController {
 		
 		return new ResponseEntity<List<MarcaProduto>>(marcas, HttpStatus.OK);
 	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/qtdPaginaMarca/{empresa}")
+	public ResponseEntity<Integer> qtdPaginaMarca(@PathVariable("empresa") Long empresa) {
+	
+		Integer marcas = marcaRepository.buscarQtdPaginas(empresa);
+		
+		return new ResponseEntity<Integer>(marcas, HttpStatus.OK);
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/listaMarcaByPagina/{pagina}/{empresa}")
+	public ResponseEntity<List<MarcaProduto>> listarMarca(@PathVariable("pagina") Integer pagina, 
+			@PathVariable("empresa") Long empresa) {
+		
+		Pageable pageable = PageRequest.of(pagina, 5, Sort.by("nomeDesc"));
+		
+		List<MarcaProduto> marcas = marcaRepository.findPorPage(empresa, pageable);
+		
+		return new ResponseEntity<List<MarcaProduto>>(marcas, HttpStatus.OK);
+	}
+	
+	
+
+	
+	
+	
 	
 }

@@ -22,7 +22,7 @@
       <a href="#about-the-project">About The Project</a>
       
 <<<<<<< HEAD
-      <img src="/resource/static/img/captura.png" style="max-width: 100%;">
+      <img src= "src/main/resources/static/img/captura.png" style="max-width: 100%;">
       /project-imgs/pagamento.png
 =======
       <img src="../resource/static/img/captura.png" style="max-width: 100%;">
