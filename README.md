@@ -20,6 +20,9 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
+      
+      <img src="../resource/static/img/captura.png" style="max-width: 100%;">
+      
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>

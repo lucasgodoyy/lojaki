@@ -179,11 +179,7 @@
 				</dependency>
 
 
-		<dependency>
-			<groupId>jdev.mentoria.lojavirtual</groupId>
-			<artifactId>loja_virtual_mentoria</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		
 	</dependencies>
 
 	<build>

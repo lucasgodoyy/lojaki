@@ -20,7 +20,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
-import jdev.mentoria.lojavirtual.service.HostIgnoringCliente;
 import lojaki.lojavirtual.model.BoletoJuno;
 import lojaki.lojavirtual.model.VendaCompraLojaVirtual;
 import lojaki.lojavirtual.model.dto.AsaasApiPagamentoStatus;

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,6 +66,30 @@ public class CategoriaProdutoController {
 	
 	
 	@ResponseBody
+	@GetMapping(value = "**/buscarPorDescCategoriaEmp/{desc}/{empresa}")
+	public ResponseEntity<List<CategoriaProduto>> carregarListaCategoriaEmpresa(@PathVariable("desc") String desc, @PathVariable("empresa") Long empresa) { 
+		
+		List<CategoriaProduto> acesso = categoriaProdutoRepository.buscarCategoriaDesc2(desc.toUpperCase(), empresa);
+		
+		return new ResponseEntity<List<CategoriaProduto>>(acesso,HttpStatus.OK);
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/listaPorPageCategoriaProduto/{idEmpresa}/{pagina}")
+	public ResponseEntity<List<CategoriaProduto>> page(@PathVariable("idEmpresa") Long idEmpresa,
+			@PathVariable("pagina") Integer pagina){
+		
+		Pageable pageable = PageRequest.of(pagina, 5, Sort.by("nomeDesc"));
+		
+		List<CategoriaProduto> lista = categoriaProdutoRepository.findPorPage(idEmpresa, pageable); 
+		
+		return new ResponseEntity<List<CategoriaProduto>>(lista, HttpStatus.OK);
+	}
+	
+	
+	
+	@ResponseBody
 	@GetMapping(value = "**/buscarPorId/{id}")
 	public ResponseEntity<CategoriaProduto> carregarListaCategoria(@PathVariable("id") Long id) {
 		
@@ -89,11 +116,10 @@ public class CategoriaProdutoController {
 	
 	
 	@PostMapping(value = "**/deletarCategoria")
-	public ResponseEntity<String> deleteCategoria(@RequestBody CategoriaProduto categoriaProduto) {
+	public ResponseEntity<String> deleteCategoria(@RequestBody CategoriaProduto categoriaProduto) throws ExceptionLojaki {
+		
+		
 		if (!categoriaProdutoRepository.findById(categoriaProduto.getId()).isPresent()) {
-			
-			
-			
 			return new ResponseEntity<String>("Categoria não existe ou já foi removida", HttpStatus.OK);
 		}
 
@@ -101,4 +127,18 @@ public class CategoriaProdutoController {
 		return new ResponseEntity<String>("Categoria removida com sucesso", HttpStatus.OK);
 	}
 
+	
+	@ResponseBody
+	@GetMapping(value = "**/qtdPaginaCategoriaProduto/{idEmpresa}")
+	public ResponseEntity<Integer> qtdPagina(@PathVariable("idEmpresa") Long idEmpresa) { 
+		
+		Integer qtdPagina = categoriaProdutoRepository.qtdPagina(idEmpresa);
+		
+		return new ResponseEntity<Integer>(qtdPagina,HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
 }

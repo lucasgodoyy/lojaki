@@ -31,13 +31,14 @@ public class MarcaProdutoController {
 		
 		if (marcaProduto.getId() == null) {
 		
-			List<MarcaProduto> marcas = marcaRepository.buscarMarcaProdutoPorNomeDescricao(marcaProduto.getNomeDesc().toUpperCase());
+			List<MarcaProduto> marcas = marcaRepository.buscarMarcaProdutoPorNomeDescricao(marcaProduto.getNomeDesc().toUpperCase(), marcaProduto.getEmpresa().getId());
 			
 			if (!marcas.isEmpty()) {
 				throw new ExceptionLojaki("Já existe marca do produto com a descrição: " + marcaProduto.getNomeDesc());
+		
 			}
 		}
-		MarcaProduto marcaSalva = marcaRepository.save(marcaProduto);
+		MarcaProduto marcaSalva = marcaRepository.saveAndFlush(marcaProduto);
 		
 		return new ResponseEntity<>(marcaSalva, HttpStatus.OK);
 	}
@@ -46,9 +47,16 @@ public class MarcaProdutoController {
 	@PostMapping(value = "**/deleteMarca")
 	public ResponseEntity<String> deleteMarca(@RequestBody MarcaProduto marcaProduto) {
 		
-		marcaRepository.deleteById(marcaProduto.getId());
 		
-		return new ResponseEntity<String>("Marca do produto removida com sucesso!", HttpStatus.OK);
+			if (!marcaRepository.findById(marcaProduto.getId()).isPresent()) {	
+			return new ResponseEntity<String>("Marca do produto com id: "+ marcaProduto.getId() + " não existe ou já foi removida", HttpStatus.OK);
+			
+		
+		}else {marcaRepository.deleteById(marcaProduto.getId());
+		
+		return new ResponseEntity<String>("Marca do produto com id: " + marcaProduto.getId() +  " removida com sucesso!", HttpStatus.OK);
+		}
+		
 	}
 	
 	@DeleteMapping(value = "**/deleteMarcaPorId/{id}")
@@ -74,12 +82,31 @@ public class MarcaProdutoController {
 	
 	
 	@ResponseBody
-	@GetMapping(value = "**/obterMarcaProdutoPorNomeDescricao/{nomeDesc}")
-	public ResponseEntity<List<MarcaProduto>> pesquisarPorNomeDescricao(@PathVariable("nomeDesc") String nomeDesc) {
-	
-		List<MarcaProduto> marcas = marcaRepository.buscarMarcaProdutoPorNomeDescricao(nomeDesc.toUpperCase().trim());
+	@GetMapping(value = "**/listaMarcaProdutoPorEmpresa/{empresaId}")
+	public ResponseEntity<List<MarcaProduto>> pesquisarMarcaPorEmpresa(@PathVariable("empresaId") Long empresaId) throws ExceptionLojaki {
 		
-		return new ResponseEntity<>(marcas, HttpStatus.OK);
+		List<MarcaProduto> marcaProduto = marcaRepository.findByEmpresa(empresaId);
+		
+		if (marcaProduto == null) {
+			throw new ExceptionLojaki("Não há dados para mostrar, null ");
+		}
+		
+		if (marcaProduto.isEmpty()) {
+			throw new ExceptionLojaki("Não há dados para mostrar ");
+		}
+		
+		return new ResponseEntity<List<MarcaProduto>>(marcaProduto, HttpStatus.OK);
+	}
+	
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/obterMarcaProdutoPorNomeDescricao/{nomeDesc}/{empresa}")
+	public ResponseEntity<List<MarcaProduto>> pesquisarPorNomeDescricao(@PathVariable("nomeDesc") String nomeDesc, @PathVariable("empresa") Long empresa) {
+	
+		List<MarcaProduto> marcas = marcaRepository.buscarMarcaProdutoPorNomeDescricao(nomeDesc.toUpperCase().trim(), empresa);
+		
+		return new ResponseEntity<List<MarcaProduto>>(marcas, HttpStatus.OK);
 	}
 	
 }
