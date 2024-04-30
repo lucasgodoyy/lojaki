@@ -3,6 +3,9 @@ package lojaki.lojavirtual.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lojaki.lojavirtual.ExceptionLojaki;
 import lojaki.lojavirtual.model.Acesso;
+import lojaki.lojavirtual.model.MarcaProduto;
 import lojaki.lojavirtual.repository.AcessoRepository;
 import lojaki.lojavirtual.service.AcessoService;
 
@@ -48,21 +52,31 @@ public class AcessoController {
 
 	@ResponseBody
 	@PostMapping(value = "**/deleteAcesso")
-	public ResponseEntity<?> deleteAcesso(@RequestBody Acesso acesso) {
+	public ResponseEntity<String> deleteAcesso(@RequestBody Acesso acesso) {
 
+		if (!acessoRepository.findById(acesso.getId()).isPresent()){	
+			return new ResponseEntity<String>("Marca do produto com id: "+ acesso.getId() 
+			+ " não existe ou já foi removida", HttpStatus.OK);
+		}
+			
 		acessoRepository.deleteById(acesso.getId());
-
-		return new ResponseEntity<>("Acesso removido com sucesso!", HttpStatus.OK);
-
+		
+		return new ResponseEntity<String>("Marca do produto com id: " + acesso.getId() +  " removida com sucesso!", HttpStatus.OK);
+		
 	}
+	
 
 	@ResponseBody
 	@DeleteMapping(value = "**/deleteAcessoPorId/{id}")
 	public ResponseEntity<String> deleteAcessoPorId(@PathVariable("id") Long id) {
+		
 		acessoRepository.deleteById(id);
+		
 		return new ResponseEntity<>("Acesso removido com sucesso!", HttpStatus.OK);
 	}
 
+	
+	
 	@ResponseBody
 	@GetMapping(value = "**/obterAcessoPorId/{id}")
 	public ResponseEntity<Acesso> pesquisarPorId(@PathVariable("id") Long id) throws ExceptionLojaki {
@@ -76,10 +90,37 @@ public class AcessoController {
 
 	}
 
-	@GetMapping(value = "**/obterAcessoPorDescricao/{desc}")
-	public ResponseEntity<List<Acesso>> pesquisarPorDescricao(@PathVariable("desc") String desc) {
-		List<Acesso> acessos = acessoRepository.buscarAcessoDesc(desc.toUpperCase());
-		return new ResponseEntity<>(acessos, HttpStatus.OK);
+	@GetMapping(value = "**/obterAcessoPorDescricao/{desc}/{empresa}")
+	public ResponseEntity<List<Acesso>> pesquisarPorDescricao(@PathVariable("desc") String desc,
+			@PathVariable("empresa") Long empresa) {
+		
+		List<Acesso> acessos = acessoRepository.buscarAcessoDescEmpresa(desc.toUpperCase(), empresa);
+		return new ResponseEntity<List<Acesso>>(acessos, HttpStatus.OK);
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/listaAcessoByPagina/{pagina}/{empresa}")
+	public ResponseEntity<List<Acesso>> listarMarca(@PathVariable("pagina") Integer pagina, 
+			@PathVariable("empresa") Long empresa) {
+		
+		Pageable pageable = PageRequest.of(pagina, 5, Sort.by("descricao"));
+		
+		List<Acesso> acesso = acessoRepository.findPorPage(empresa, pageable);
+		
+		return new ResponseEntity<List<Acesso>>(acesso, HttpStatus.OK);
 	}
 
+	
+	@ResponseBody
+	@GetMapping(value = "**/qtdPaginaAcesso/{empresa}")
+	public ResponseEntity<Integer> qtdPaginaAcesso(@PathVariable("empresa") Long empresa) {
+	
+		Integer acesso = acessoRepository.qtdPagina(empresa);
+		
+		return new ResponseEntity<Integer>(acesso, HttpStatus.OK);
+	}
+	
+	
+	
 }
