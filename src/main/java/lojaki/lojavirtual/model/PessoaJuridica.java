@@ -25,10 +25,10 @@ public class PessoaJuridica extends Pessoa {
 	@Column(nullable = false)
 	private String cnpj;
 	
-	@Column(nullable = false)
+	@Column
 	private String inscricaoEstadual;
 	
-	
+	@Column(nullable = false)
 	private String inscricaoMunicipal;
 	
 	@Column(nullable = false)
@@ -37,25 +37,10 @@ public class PessoaJuridica extends Pessoa {
 	@Column(nullable = false)
 	private String razaoSocial;
 	
-	
 	private String categoria;
 
-	 @JsonIgnore
-	    @ManyToOne(targetEntity = Pessoa.class)
-	    @JoinColumn(name = "empresa_id", nullable = true, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_id_fk"))
-	    private Pessoa empresa;
 	
-	 
 	
-	public Pessoa getEmpresa() {
-		return empresa;
-	}
-
-
-	public void setEmpresa(Pessoa empresa) {
-		this.empresa = empresa;
-	}
-
 
 	public String getCnpj() {
 		return cnpj;

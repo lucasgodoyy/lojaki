@@ -20,11 +20,13 @@ import org.springframework.stereotype.Service;
 public class ServiceSendEmail {
 
 	private String userName = "ehlucasgodoy10@gmail.com";
-	private String password;
+	private String password = "mqikobttdkuuzkww";
 
-	 @Async
+	 	@Async
 	    public void enviarEmailHtml(String assunto, String textoMensagem, String emailDestino) throws MessagingException, UnsupportedEncodingException {
-	        password = System.getenv("SENHA_APP_GOOGLE_EMAIL");
+	       
+		// password = System.getenv("SENHA_APP_GOOGLE_EMAIL");
+	       
 	        Properties properties = new Properties();
 
 	        properties.put("mail.smtp.ssl.trust", "*");
@@ -39,7 +41,8 @@ public class ServiceSendEmail {
 	        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
 	        Session session = Session.getInstance(properties, new Authenticator() {
-	            @Override
+	          
+	        	@Override
 	            protected PasswordAuthentication getPasswordAuthentication() {
 	                return new PasswordAuthentication(userName, password);
 	            }
@@ -50,7 +53,7 @@ public class ServiceSendEmail {
 	        Address[] toUser = InternetAddress.parse(emailDestino);
 
 	        Message message = new MimeMessage(session);
-	        message.setFrom(new InternetAddress(userName, "Lucas Godoy", "UTF-8"));
+	        message.setFrom(new InternetAddress(userName, "LOJAKI", "UTF-8"));
 	        message.setRecipients(Message.RecipientType.TO, toUser);
 	        message.setSubject(assunto);
 	        message.setContent(textoMensagem, "text/html; charset=utf-8");

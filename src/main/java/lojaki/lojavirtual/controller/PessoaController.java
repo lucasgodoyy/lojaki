@@ -8,6 +8,9 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,12 +18,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lojaki.lojavirtual.ExceptionLojaki;
-import lojaki.lojavirtual.enums.TipoPessoa;
+import lojaki.lojavirtual.model.Acesso;
 import lojaki.lojavirtual.model.Endereco;
 import lojaki.lojavirtual.model.PessoaFisica;
 import lojaki.lojavirtual.model.PessoaJuridica;
@@ -107,71 +109,138 @@ public class PessoaController {
 
 	}
 
+	
+	/*end-point é microsservicos é um API*/
 	@ResponseBody
-	@PostMapping(value = "**/salvarPj")
-	public ResponseEntity<PessoaJuridica> salvarPj(@RequestBody @Valid PessoaJuridica pessoaJuridica)
-			throws ExceptionLojaki {
-
+	@PostMapping(value = "**/salvarEmpresa")
+	public ResponseEntity<PessoaJuridica> salvarEmpresa(@RequestBody @Valid PessoaJuridica pessoaJuridica) throws ExceptionLojaki{
+		
+		
 		if (pessoaJuridica == null) {
-			throw new ExceptionLojaki("Pessoa jurídica não pode ser NULL!");
+			throw new ExceptionLojaki("Pessoa juridica nao pode ser NULL");
 		}
-
-		if (pessoaJuridica.getTipoPessoa() == null) {
-			throw new ExceptionLojaki("Informe o tipo Jurídico ou Fornecedor da loja");
-		}
-
-		if (pessoaJuridica.getId() == null
-				&& pessoaJuridicaRepository.existeCnpjCadastrado(pessoaJuridica.getCnpj()) != null) {
+		
+		
+		if (pessoaJuridica.getId() == null && pessoaJuridicaRepository.existeCnpjCadastrado(pessoaJuridica.getCnpj()) != null) {
 			throw new ExceptionLojaki("Já existe CNPJ cadastrado com o número: " + pessoaJuridica.getCnpj());
 		}
-
-		if (!ValidaCNPJ.isCNPJ(pessoaJuridica.getCnpj())) {
-			throw new ExceptionLojaki("CNPJ: " + pessoaJuridica.getCnpj() + " está inválido!");
+		
+		
+		if (pessoaJuridica.getId() == null && pessoaJuridicaRepository.existeInscEstadualCadastradoList(pessoaJuridica.getInscricaoEstadual()) == null) {
+			throw new ExceptionLojaki("Já existe Inscrição estadual cadastrado com o número: " + pessoaJuridica.getInscricaoEstadual());
 		}
-
+		
+		
+		if (!ValidaCNPJ.isCNPJ(pessoaJuridica.getCnpj())) {
+			throw new ExceptionLojaki("Cnpj : " + pessoaJuridica.getCnpj() + " está inválido.");
+		}
+		
+		pessoaJuridica = pessoaUserService.salvarPessoaJuridica(pessoaJuridica);
+		
 		if (pessoaJuridica.getId() == null || pessoaJuridica.getId() <= 0) {
+			
 			for (int p = 0; p < pessoaJuridica.getEnderecos().size(); p++) {
-
-				CepDTO cepDTO = pessoaUserService.consultarCep(pessoaJuridica.getEnderecos().get(p).getCep());
-
+				
+				String cep = pessoaJuridica.getEnderecos().get(p).getCep();
+				CepDTO cepDTO = pessoaUserService.consultarCep(cep);
+				
+				if (cepDTO == null || (cepDTO != null && cepDTO.getCep() == null)) {
+					throw new ExceptionLojaki("CEP : " + cep + " está inválido.");
+				}
+				
 				pessoaJuridica.getEnderecos().get(p).setBairro(cepDTO.getBairro());
 				pessoaJuridica.getEnderecos().get(p).setCidade(cepDTO.getLocalidade());
 				pessoaJuridica.getEnderecos().get(p).setComplemento(cepDTO.getComplemento());
 				pessoaJuridica.getEnderecos().get(p).setRuaLogra(cepDTO.getLogradouro());
 				pessoaJuridica.getEnderecos().get(p).setUf(cepDTO.getUf());
+				pessoaJuridica.getEnderecos().get(p).setEmpresa(pessoaJuridica);
+				pessoaJuridica.getEnderecos().get(p).setPessoa(pessoaJuridica);
+				
 			}
-		} else {
+		}else {
+			
 			for (int p = 0; p < pessoaJuridica.getEnderecos().size(); p++) {
-				Endereco enderecoTemp = enderecoRepository.findById(pessoaJuridica.getEnderecos().get(p).getId()).get();
-				if (!enderecoTemp.getCep().equals(pessoaJuridica.getEnderecos().get(p).getCep())) {
-
-					CepDTO cepDTO = pessoaUserService.consultarCep(pessoaJuridica.getEnderecos().get(p).getCep());
-
+				
+				Long idCep = pessoaJuridica.getEnderecos().get(p).getId();
+				
+				if(idCep != null) {
+				 Endereco enderecoTemp =  enderecoRepository.findById(idCep).get();
+				
+				 if (!enderecoTemp.getCep().equals(pessoaJuridica.getEnderecos().get(p).getCep())) {
+					
+				
+					 CepDTO cepDTO = pessoaUserService.consultarCep(pessoaJuridica.getEnderecos().get(p).getCep());
+					
 					pessoaJuridica.getEnderecos().get(p).setBairro(cepDTO.getBairro());
 					pessoaJuridica.getEnderecos().get(p).setCidade(cepDTO.getLocalidade());
 					pessoaJuridica.getEnderecos().get(p).setComplemento(cepDTO.getComplemento());
 					pessoaJuridica.getEnderecos().get(p).setRuaLogra(cepDTO.getLogradouro());
 					pessoaJuridica.getEnderecos().get(p).setUf(cepDTO.getUf());
-
+					pessoaJuridica.getEnderecos().get(p).setEmpresa(pessoaJuridica.getEmpresa());
+					pessoaJuridica.getEnderecos().get(p).setPessoa(pessoaJuridica);
+	
+					
+					enderecoRepository.saveAllAndFlush(pessoaJuridica.getEnderecos());
+					
+				 } 
 				}
 			}
 		}
-
-		pessoaJuridica = pessoaUserService.salvarPessoaJuridica(pessoaJuridica);
-
+		
+		
 		return new ResponseEntity<PessoaJuridica>(pessoaJuridica, HttpStatus.OK);
-
 	}
+	
+	
+	
+	
+	
+	@ResponseBody
+	@PostMapping(value = "**/salvarEmpresaNova")
+	public ResponseEntity<PessoaJuridica> salvarEmpresaNova(@RequestBody @Valid PessoaJuridica pessoaJuridica) throws ExceptionLojaki{
+		
+		
+		if (pessoaJuridica == null) {
+			throw new ExceptionLojaki("Pessoa juridica nao pode ser NULL");
+		}
+		
+		
+		if (pessoaJuridica.getId() == null && pessoaJuridicaRepository.existeCnpjCadastrado(pessoaJuridica.getCnpj()) != null) {
+			throw new ExceptionLojaki("Já existe CNPJ cadastrado com o número: " + pessoaJuridica.getCnpj());
+		}
+		
+		if (pessoaJuridica.getId() == null && pessoaJuridicaRepository.existeEmailCadastrado(pessoaJuridica.getEmail()) != null) {
+			throw new ExceptionLojaki("Este email já foi cadastrado");
+		}
+		
+		if (pessoaJuridica.getId() == null && pessoaJuridicaRepository.existeInscEstadualCadastradoList(pessoaJuridica.getInscricaoEstadual()) == null) {
+			throw new ExceptionLojaki("Já existe Inscrição estadual cadastrado com o número: " + pessoaJuridica.getInscricaoEstadual());
+		}
+		
+		
+		if (!ValidaCNPJ.isCNPJ(pessoaJuridica.getCnpj())) {
+			throw new ExceptionLojaki("Cnpj : " + pessoaJuridica.getCnpj() + " está inválido.");
+		}
+	
+		PessoaJuridica	pessoaJur = pessoaUserService.salvarPessoaJuridicaNova(pessoaJuridica);
+		
+		
+		
+		return new ResponseEntity<PessoaJuridica>(pessoaJur, HttpStatus.OK);
+		
+	}
+	
 
+	
+	
+	
+	
+	
 	@PostMapping(value = "**/salvarPf")
 	public ResponseEntity<PessoaFisica> salvarPf(@RequestBody @Valid PessoaFisica pessoaFisica) throws ExceptionLojaki {
 
 		if (pessoaFisica == null) {
 			throw new ExceptionLojaki("Pessoa física não pode ser NULL!");
-		}
-
-		if (pessoaFisica.getTipoPessoa() == null) {
-			pessoaFisica.setTipoPessoa(TipoPessoa.FISICA.name());
 		}
 
 		if (pessoaFisica.getId() == null && pessoaFisicaRepository.existeCpfCadastrado(pessoaFisica.getCpf()) != null) {
@@ -182,7 +251,13 @@ public class PessoaController {
 			throw new ExceptionLojaki("CPF: " + pessoaFisica.getCpf() + " está inválido!");
 		}
 
+		
 		pessoaFisica = pessoaUserService.salvarPessoaFisica(pessoaFisica);
+		
+		
+		
+		
+		
 		return new ResponseEntity<>(pessoaFisica, HttpStatus.OK);
 	}
 
@@ -236,5 +311,28 @@ public class PessoaController {
 
 		return new ResponseEntity<>(pessoaJuridicaList, HttpStatus.OK);
 	}
+	
+	
+	@ResponseBody
+	@GetMapping("**/listaEmpresaByPagina/{pagina}")
+	public ResponseEntity<List<PessoaJuridica>> listaEmpresaByPagina(@PathVariable("pagina") Integer pagina) {
+
+		Pageable pageable = PageRequest.of(pagina, 5, Sort.by("nomeFantasia"));
+		
+		List<PessoaJuridica> pessoaJuridicaList = pessoaJuridicaRepository.findPorPage(pageable);
+
+		return new ResponseEntity<List<PessoaJuridica>>(pessoaJuridicaList, HttpStatus.OK);
+	}
+	
+	
+	@ResponseBody
+	@GetMapping(value = "**/qtdPaginaEmpresa")
+	public ResponseEntity<Integer> qtdPaginaEmpresa() {
+	
+		Integer pessoaJuridica = pessoaJuridicaRepository.qtdPagina();
+		
+		return new ResponseEntity<Integer>(pessoaJuridica, HttpStatus.OK);
+	}
+	
 
 }

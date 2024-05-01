@@ -69,7 +69,14 @@ public class PessoaUserService {
 
 	public PessoaJuridica salvarPessoaJuridica(PessoaJuridica pessoaJuridica) {
 
+		
+		for (int i = 0; i< pessoaJuridica.getEnderecos().size(); i++) {
+			pessoaJuridica.getEnderecos().get(i).setPessoa(pessoaJuridica);
+			pessoaJuridica.getEnderecos().get(i).setEmpresa(pessoaJuridica.getEmpresa());
+		}
+		
 		pessoaJuridica = pessoaJuridicaRepository.save(pessoaJuridica);
+		
 
 		Usuario usuarioPj = usuarioRepository.findUserByPessoa(pessoaJuridica.getId(), pessoaJuridica.getEmail());
 
@@ -93,9 +100,12 @@ public class PessoaUserService {
 
 			usuarioRepository.insereAcessoUser(usuarioPj.getId());
 			usuarioRepository.insereAcessoUserPj(usuarioPj.getId(), "ROLE_ADMIN");
+			
+			
+			System.out.println(usuarioPj.getSenha() + "--------- " + usuarioPj.getLogin());
 
 			
-			// Envio e-mail login e senha
+/*			// Envio e-mail login e senha
 			StringBuilder mensagemHtml = new StringBuilder();
 			mensagemHtml.append("<b>Segue abaixo seus dados de acesso Pessoa Jurídica para a loja virtual:</b><br/><br/>");
 			mensagemHtml.append("<b>Login:</b> " + pessoaJuridica.getEmail() + "<br/>");
@@ -106,12 +116,77 @@ public class PessoaUserService {
 						pessoaJuridica.getEmail());
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			} */
 
 		}
 		return pessoaJuridica;
 
 	}
+	
+	
+		public PessoaJuridica salvarPessoaJuridicaNova(PessoaJuridica juridica) {
+
+		
+		PessoaJuridica juridicaSalva = pessoaJuridicaRepository.save(juridica);
+		
+		
+		Usuario usuarioPj = usuarioRepository.findUserByPessoa(juridicaSalva.getId(), juridicaSalva.getEmail());
+
+		if (usuarioPj == null) {
+			
+			String constraint = usuarioRepository.consultaConstraintAcesso();
+			if (constraint != null) {
+				jdbcTemplate.execute("begin; alter table usuarios_acesso drop constraint " + constraint + "; commit;");
+			}
+
+			usuarioPj = new Usuario();
+			usuarioPj.setDataAtualSenha(Calendar.getInstance().getTime());
+		
+			
+			usuarioPj.setEmpresa(juridicaSalva);
+			
+			
+			
+			usuarioPj.setPessoa(juridicaSalva);
+			usuarioPj.setLogin(juridicaSalva.getEmail());
+
+			String senha = "" + Calendar.getInstance().getTimeInMillis();
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
+
+			usuarioPj.setSenha(senhaCriptografada);
+			Usuario usuarioSalvo = usuarioRepository.saveAndFlush(usuarioPj);
+
+			System.out.println("Senha: " + senha + "--------- " + "Login: " + usuarioSalvo.getLogin());
+
+			
+			usuarioRepository.insereAcessoUser(usuarioSalvo.getId());
+			usuarioRepository.insereAcessoUserPj(usuarioSalvo.getId(), "ROLE_ADMIN");
+			
+			
+			
+			
+			//Envio e-mail login e senha
+			StringBuilder mensagemHtml = new StringBuilder();
+			mensagemHtml.append("<b>Olá, segue abaixo seus dados de acesso para a loja</b><br/><br/>");
+			mensagemHtml.append("<b>Login:</b> " + juridicaSalva.getEmail() + "<br/>");
+			mensagemHtml.append("<b>Senha:</b> ").append(senha).append("<br/><br/>");
+			mensagemHtml.append("<b>Obrigado!</b>");
+			try {
+				serviceSendEmail.enviarEmailHtml("Cadastro realizado com sucesso", mensagemHtml.toString(),
+						juridicaSalva.getEmail());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+
+		}
+		
+		return juridicaSalva;
+
+	}
+
+	
+	
+	
 
 	public PessoaFisica salvarPessoaFisica(PessoaFisica pessoaFisica) {
 
